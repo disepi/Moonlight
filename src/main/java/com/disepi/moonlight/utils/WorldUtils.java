@@ -21,11 +21,19 @@ public class WorldUtils {
 
     // Checks surroundings to determine if the player is actually on ground
     public static boolean isConsideredOnGround(Vector3 pos, Level level) {
-        double value = 1.62 + 0.01; // getEyeHeight();
-        for (int i = 0; i < 2; i++) { // Towering up can cause issues so we check 1 more block down
-            if (isConsideredSolid(level, pos.x, pos.y - value, pos.z) || isConsideredSolid(level, pos.x - 0.6, pos.y - value, pos.z - 0.6) || isConsideredSolid(level, pos.x + 0.6, pos.y - value, pos.z + 0.6) || isConsideredSolid(level, pos.x - 0.6, pos.y - value, pos.z + 0.6) || isConsideredSolid(level, pos.x + 0.6, pos.y - value, pos.z - 0.6))
-                return true;
-            value += 1.0;
+        double value = 1.63; // getEyeHeight();
+        if (isConsideredSolid(level, pos.x, pos.y - value, pos.z)) // directly below player
+            return true;
+
+        // check in radius around player
+        int radius = 2;
+        for (int x = -radius; x < radius; x++)
+        {
+            for (int z = -radius; z < radius; z++)
+            {
+                if (isConsideredSolid(level, pos.x+x, pos.y - value, pos.z+z))
+                    return true;
+            }
         }
         return false;
     }
