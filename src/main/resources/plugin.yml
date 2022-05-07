@@ -1,0 +1,8 @@
+name: Moonlight
+main: com.disepi.moonlight.Main
+version: "1.0.0"
+api: ["1.0.0"]
+
+load: POSTWORLD
+author: Disepi
+description: A Nukkit AntiCheat
