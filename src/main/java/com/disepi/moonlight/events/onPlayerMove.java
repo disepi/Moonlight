@@ -91,5 +91,7 @@ public class onPlayerMove implements Listener {
         data.lastX = x;
         data.lastY = y;
         data.lastZ = z;
+        data.lastPitch = packet.pitch;
+        data.lastYaw = packet.yaw;
     }
 }

@@ -4,7 +4,8 @@ import cn.nukkit.Player;
 import com.disepi.moonlight.anticheat.check.Check;
 import com.disepi.moonlight.anticheat.check.combat.killaura.KillauraA;
 import com.disepi.moonlight.anticheat.check.combat.killaura.KillauraB;
-import com.disepi.moonlight.anticheat.check.exploit.timer.TimerA;
+import com.disepi.moonlight.anticheat.check.exploit.badpackets.BadPackets;
+import com.disepi.moonlight.anticheat.check.exploit.timer.Timer;
 import com.disepi.moonlight.anticheat.check.motion.fly.FlyA;
 import com.disepi.moonlight.anticheat.check.motion.speed.SpeedA;
 import com.disepi.moonlight.anticheat.check.motion.speed.SpeedB;
@@ -30,9 +31,10 @@ public class Moonlight {
         checks.add(new SpeedA());
         checks.add(new SpeedB());
         checks.add(new FlyA());
-        checks.add(new TimerA());
+        checks.add(new Timer());
         checks.add(new KillauraA());
         checks.add(new KillauraB());
+        checks.add(new BadPackets());
     }
 
     // Returns the data instance of a player

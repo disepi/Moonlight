@@ -53,7 +53,7 @@ public class KillauraB extends Check {
 
         // This changes the fake player name tag every second to avoid circumvention
         if (d.fake.ticks % 20 == 0) // The game runs at 20 ticks per second, so we wait 20 ticks for a whole second
-            d.fake.setNameTag(Util.generateRandomString(6 + Util.rnd.nextInt(6))); // Set the nametag to random characters
+            d.fake.setNameTag(Util.generateRandomString(6 + Util.rnd.nextInt(6))); // Set the name tag to random characters
 
         // Change yaw/pitch to make the fake bot appear legitimate
         d.fake.pitch = -90 + Util.rnd.nextInt(180); // Pitch
