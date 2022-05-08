@@ -36,8 +36,10 @@ public class onPlayerMove implements Listener {
         Player player = event.getPlayer(); // Get the player instance from the packet
         PlayerData data = Moonlight.getData(player); // Get the player data instance from Moonlight
         data.currentSpeed = Util.distance(x, 0, z, data.lastX, 0, data.lastZ); // Get the current horizontal distance from the last position
+        if(player.isSprinting()) data.sprintingTicks = 10;
+        else data.sprintingTicks--;
         data.speedMultiplier = MotionUtils.getSpeedMultiplier(player); // Get speed multiplier from speed potions
-        if (!player.isSprinting()) data.speedMultiplier *= 0.75f; // Check if the player is actually sprinting
+        if (!data.isPlayerConsideredSprinting()) data.speedMultiplier *= 0.75f; // Check if the player is actually sprinting
 
         // Check whether we are actually standing on a block
         data.onGround = WorldUtils.isConsideredOnGround(x, y, z, player.level); // Check if we around a block
