@@ -15,10 +15,13 @@ Moonlight is an anticheat for Nukkit designed to prevent cheating. It is still i
 ---
 #### Speed
 - [x] Abnormal speed distance check
+- `Total limit of movement speed to 13 blocks per second`
 - [x] Off-ground friction check
+- `Checks movement friction off-ground. Detects most Bunnyhops!`
 - [x] Off-ground total speed limit
+- `Checks the off-ground speed for abnormal high values and limits to sprint speed, further detecting Bunnyhops!`
 - [x] On-ground total speed limit
-- `Limits movement speed to 13 blocks per second`
+- `Checks the on-ground speed for abnormal high values and limits them. Detects vanilla ground-speeds!`
 #### Example
 ![speed](https://user-images.githubusercontent.com/54753631/167266602-5dea84e4-e3d8-4033-9800-1f793f2313f3.gif)
 ---
