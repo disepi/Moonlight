@@ -22,24 +22,24 @@ public class WorldUtils {
     }
 
     // Checks surroundings to retrieve the nearest solid block
-    public static Block getNearestSolidBlock(Vector3 pos, Level level) {
+    public static Block getNearestSolidBlock(Vector3 pos, Level level, int radius) {
         double value = 1.62 + 0.01; // getEyeHeight();
-        Block under = level.getBlock((int)pos.x,(int)(pos.y-value),(int)pos.z); // get block
+        Block under = level.getBlock((int) pos.x, (int) (pos.y - value), (int) pos.z); // get block
         if (!(under instanceof BlockAir)) // check if it isn't air
             return under; // return under block
 
         // check in radius around player
-        for (int x = -2; x < 2; x++) {
-            for (int z = -2; z < 2; z++) {
-                Block temp = level.getBlock((int)pos.x+x,(int)(pos.y-value),(int)pos.z+z); // get temp block
+        for (int x = -radius; x < radius; x++) {
+            for (int z = -radius; z < radius; z++) {
+                Block temp = level.getBlock((int) pos.x + x, (int) (pos.y - value), (int) pos.z + z); // get temp block
                 if (!(temp instanceof BlockAir)) return temp; // if it isn't air, return it
             }
         }
         return airB; // no block found, return air
     }
 
-    public static Block getNearestSolidBlock(double x, double y, double z, Level level) {
-        return getNearestSolidBlock(new Vector3(x, y, z), level);
+    public static Block getNearestSolidBlock(double x, double y, double z, Level level, int radius) {
+        return getNearestSolidBlock(new Vector3(x, y, z), level, radius);
     }
 
 }

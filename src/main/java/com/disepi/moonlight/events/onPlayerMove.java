@@ -5,7 +5,6 @@ import cn.nukkit.block.*;
 import cn.nukkit.event.EventHandler;
 import cn.nukkit.event.Listener;
 import cn.nukkit.event.server.DataPacketReceiveEvent;
-import cn.nukkit.level.Level;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.network.protocol.MovePlayerPacket;
 import com.disepi.moonlight.anticheat.Moonlight;
@@ -37,19 +36,24 @@ public class onPlayerMove implements Listener {
         // Set/get data
         Player player = event.getPlayer(); // Get the player instance from the packet
         PlayerData data = Moonlight.getData(player); // Get the player data instance from Moonlight
+
+        // Speed calculations
         data.currentSpeed = Util.distance(x, 0, z, data.lastX, 0, data.lastZ); // Get the current horizontal distance from the last position
-        if(player.isSprinting()) data.sprintingTicks = 10;
+        if (player.isSprinting()) data.sprintingTicks = 10;
         else data.sprintingTicks--;
         data.speedMultiplier = MotionUtils.getSpeedMultiplier(player); // Get speed multiplier from speed potions
-        if (!data.isPlayerConsideredSprinting()) data.speedMultiplier *= 0.75f; // Check if the player is actually sprinting
+        if (!data.isPlayerConsideredSprinting())
+            data.speedMultiplier *= 0.75f; // Check if the player is actually sprinting
+        data.jumpTicks--; // Decrease jump ticks
 
         // Check whether we are actually standing on a block
-        Block block = WorldUtils.getNearestSolidBlock(x, y, z, player.level); // Retrieve nearest solid block
+        Block block = WorldUtils.getNearestSolidBlock(x, y, z, player.level, 2); // Retrieve nearest solid block
         data.onGround = !(block instanceof BlockAir); // Set on ground if block is not air (solid)
-        data.onGroundAlternate = !(player.level.getBlock((int)x,(int)(y-1.62),(int)z) instanceof BlockAir); // Check if we are DIRECTLY under a block
+        data.onGroundAlternate = !(player.level.getBlock((int) x, (int) (y - 1.62), (int) z) instanceof BlockAir); // Check if we are DIRECTLY under a block
 
         // Stair check - we also have to check for the above block because sometimes it
-        if (block instanceof BlockStairs || player.level.getBlock((int)block.x, (int)block.y+1,(int)block.z) instanceof BlockStairs) data.staircaseLenientTicks = 20;
+        if (block instanceof BlockStairs || player.level.getBlock((int) block.x, (int) block.y + 1, (int) block.z) instanceof BlockStairs)
+            data.staircaseLenientTicks = 20;
         else data.staircaseLenientTicks--;
 
         // Gravity changing blocks
@@ -61,8 +65,19 @@ public class onPlayerMove implements Listener {
         if (block instanceof BlockIce || block instanceof BlockIcePacked) data.frictionLenientTicks = 20;
         else data.frictionLenientTicks--;
 
-        // Fix staircase bugs
-        if(data.staircaseLenientTicks > 0) data.currentSpeed /= 4.0;
+        // Check for a block above us
+        if (!(WorldUtils.getNearestSolidBlock(x, y + 2.03, z, player.level, 1) instanceof BlockAir))
+            data.blockAboveLenientTicks = 20;
+        else data.blockAboveLenientTicks--;
+
+
+        // Adjust speed to environment
+        if (data.staircaseLenientTicks > 0) data.currentSpeed /= 4.0;
+
+        if (data.isPlayerConsideredJumping()) {
+            if (data.frictionLenientTicks > 0) data.currentSpeed /= 1.5;
+            if (data.blockAboveLenientTicks > 0) data.currentSpeed /= 2.4;
+        }
 
         packet.onGround = data.onGroundAlternate; // Our information is more accurate - we do NOT trust the client with the onGround value located inside the packet.
 

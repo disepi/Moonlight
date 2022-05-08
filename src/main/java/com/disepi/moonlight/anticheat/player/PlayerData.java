@@ -19,6 +19,7 @@ public class PlayerData {
     public int blockAboveLenientTicks = 0; // Jumping below blocks
     public int staircaseLenientTicks = 0; // Jumping on staircases
     public int sprintingTicks = 0; // Will stay at 10 when player is sprinting and decrease over ticks if they are not
+    public int jumpTicks = 0; // Increases to a fixed value when a player jumps and decreases after
 
     public float speedMultiplier = 1; // Speed potions affect this
 
@@ -35,9 +36,12 @@ public class PlayerData {
         this.fake = null;
     }
 
-    public boolean isPlayerConsideredSprinting()
-    {
+    public boolean isPlayerConsideredSprinting() {
         return this.sprintingTicks > 0;
+    }
+
+    public boolean isPlayerConsideredJumping() {
+        return this.jumpTicks > 0;
     }
 
 }

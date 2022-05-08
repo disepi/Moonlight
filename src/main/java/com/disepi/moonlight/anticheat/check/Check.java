@@ -3,6 +3,7 @@ package com.disepi.moonlight.anticheat.check;
 import cn.nukkit.Player;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.network.protocol.MovePlayerPacket;
+import cn.nukkit.network.protocol.PlayerActionPacket;
 import cn.nukkit.utils.TextFormat;
 import com.disepi.moonlight.anticheat.Moonlight;
 import com.disepi.moonlight.anticheat.player.PlayerData;
@@ -30,6 +31,9 @@ public class Check {
     }
 
     public void check(EntityDamageByEntityEvent e, PlayerData d, Player p) {
+    }
+
+    public void check(PlayerActionPacket e, PlayerData d, Player p) {
     }
 
 }
