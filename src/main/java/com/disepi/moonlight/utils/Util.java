@@ -22,6 +22,14 @@ public class Util {
         return sb.toString();
     }
 
+    // Returns the distance between two coordinates
+    public static float distance(float x, float y, float z, float x2, float y2, float z2) {
+        float dX = x - x2;
+        float dY = y - y2;
+        float dZ = z - z2;
+        return (float) Math.sqrt(dX * dX + dY * dY + dZ * dZ);
+    }
+
     // Checks if a value is similar to another
     public static boolean isRoughlyEqual(double x, double y, double leniency) {
         return Math.abs(x - y) < leniency;

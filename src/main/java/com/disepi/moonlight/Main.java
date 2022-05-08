@@ -5,14 +5,10 @@ import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.plugin.PluginBase;
 import cn.nukkit.plugin.PluginManager;
-import cn.nukkit.utils.Config;
 import cn.nukkit.utils.TextFormat;
 import com.disepi.moonlight.anticheat.Moonlight;
 import com.disepi.moonlight.anticheat.player.PlayerData;
-import com.disepi.moonlight.events.onPlayerAttackEntity;
-import com.disepi.moonlight.events.onPlayerDamage;
-import com.disepi.moonlight.events.onPlayerJoin;
-import com.disepi.moonlight.events.onPlayerMove;
+import com.disepi.moonlight.events.*;
 import com.disepi.moonlight.utils.FakePlayer;
 import com.disepi.moonlight.utils.PlayerUtils;
 import com.disepi.moonlight.utils.Util;
@@ -22,10 +18,8 @@ public class Main extends PluginBase {
     public void onEnable() {
         super.onEnable();
 
-        // Configuration testing
+        // Configurations
         saveDefaultConfig();
-        Config config = new Config();
-        boolean test = config.getBoolean("enabled");
 
         // Logger + show that we loaded in console
         Util.log = getLogger();
@@ -37,6 +31,7 @@ public class Main extends PluginBase {
         mgr.registerEvents(new onPlayerJoin(), this);
         mgr.registerEvents(new onPlayerAttackEntity(), this);
         mgr.registerEvents(new onPlayerDamage(), this);
+        mgr.registerEvents(new onPlayerMovedWrongly(), this);
 
         // Setup invisible skin for FakePlayer
         PlayerUtils.setupSkinStream();
@@ -58,11 +53,11 @@ public class Main extends PluginBase {
 
         // Destroy all instances of fake players
         for (PlayerData plr : Moonlight.players.values())
-            if(plr.fake != null)
-            plr.fake.despawnFromAll();
+            if (plr.fake != null)
+                plr.fake.despawnFromAll();
         for (FakePlayer plr : Moonlight.fakePlayers) {
-            if(plr != null)
-            plr.despawnFromAll();
+            if (plr != null)
+                plr.despawnFromAll();
         }
 
         // Empty the player data list

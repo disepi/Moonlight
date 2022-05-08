@@ -21,6 +21,9 @@ public class Moonlight {
     public static CopyOnWriteArrayList<Check> checks = new CopyOnWriteArrayList<Check>(); // Stores all of the Check instances
     public static CopyOnWriteArrayList<FakePlayer> fakePlayers = new CopyOnWriteArrayList<FakePlayer>(); // Stores all of the instances of fake players
 
+    // Configuration values
+    public static boolean cancelNukkitInvalidMove = true;
+
     // Sets up the list of checks
     public static void initializeChecks() {
         checks.clear();

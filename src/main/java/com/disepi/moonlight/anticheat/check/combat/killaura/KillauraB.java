@@ -2,9 +2,7 @@ package com.disepi.moonlight.anticheat.check.combat.killaura;
 
 import cn.nukkit.Player;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
-import cn.nukkit.event.player.PlayerAnimationEvent;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.network.protocol.AnimatePacket;
 import cn.nukkit.network.protocol.MovePlayerPacket;
 import com.disepi.moonlight.anticheat.check.Check;
 import com.disepi.moonlight.anticheat.player.PlayerData;
@@ -27,25 +25,26 @@ public class KillauraB extends Check {
     // Our attack callback
     public void check(EntityDamageByEntityEvent e, PlayerData d, Player p) {
         // If the attacker hits a fake player, they fail the check
-        if (e.getEntity() instanceof FakePlayer) this.fail(p, "attacking an invalid entity"); // Check has been failed by the user
+        if (e.getEntity() instanceof FakePlayer)
+            this.fail(p, "attacking an invalid entity"); // Check has been failed by the user
         else // Instead, if we don't hit a fake player but a real player/mob/entity, do this instead:
         {
-            if(d.fake == null) // If we do not currently have a fake player active, we make one
+            if (d.fake == null) // If we do not currently have a fake player active, we make one
             {
                 d.fake = PlayerUtils.getFakePlayer(p); // Assign the fake player to the player's data
                 d.fake.spawn(p); // Spawn it for the user
-            }
-            else // If we already have a fake player active
+            } else // If we already have a fake player active
                 d.fake.ticks = 0; // Reset the timer so the fake player lasts longer
         }
     }
 
     // Our move callback
     public void check(MovePlayerPacket e, PlayerData d, Player p) {
-        if(d.fake == null) return; // If the fake player does not exist for the player, we don't need to adjust it, so return.
+        if (d.fake == null)
+            return; // If the fake player does not exist for the player, we don't need to adjust it, so return.
         d.fake.ticks++; // Increment the amount of ticks the fake player has existed for
 
-        if(d.fake.ticks > 100) // If we do not attack another entity for 100 ticks (5 seconds), we de-spawn the entity
+        if (d.fake.ticks > 100) // If we do not attack another entity for 100 ticks (5 seconds), we de-spawn the entity
         {
             d.fake.despawnFromAll(); // De-spawn the entity
             d.fake = null; // Remove the fake player instance in our player data
@@ -53,7 +52,7 @@ public class KillauraB extends Check {
         }
 
         // This changes the fake player name tag every second to avoid circumvention
-        if(d.fake.ticks % 20 == 0) // The game runs at 20 ticks per second, so we wait 20 ticks for a whole second
+        if (d.fake.ticks % 20 == 0) // The game runs at 20 ticks per second, so we wait 20 ticks for a whole second
             d.fake.setNameTag(Util.generateRandomString(6 + Util.rnd.nextInt(6))); // Set the nametag to random characters
 
         // Change yaw/pitch to make the fake bot appear legitimate

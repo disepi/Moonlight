@@ -13,6 +13,8 @@ public class KillauraA extends Check {
         super("KillauraA", "Not aiming at target", 8);
     }
 
+    // TODO: Rewrite this
+
     public void check(EntityDamageByEntityEvent e, PlayerData d, Player p) {
         double cYaw = (p.yaw + 90.0) * MotionUtils.DEG;
         double cPitch = p.pitch * -MotionUtils.DEG;
