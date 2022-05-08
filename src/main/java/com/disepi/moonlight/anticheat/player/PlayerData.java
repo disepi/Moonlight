@@ -37,7 +37,7 @@ public class PlayerData {
 
     public boolean isPlayerConsideredSprinting()
     {
-        return this.sprintingTicks != 0;
+        return this.sprintingTicks > 0;
     }
 
 }
