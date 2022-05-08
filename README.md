@@ -4,6 +4,9 @@ Moonlight is an anticheat for Nukkit designed to prevent cheating. It is still i
 
 #### Currently, Moonlight is only for experimental purposes. You can still use it, but expect to see bugs as it is not fully finished yet!
 
+# Purpose
+Moonlight is made to be lightweight while also detecting cheats fast and efficiently. The cheat checks in Moonlight are carefully made to avoid detecting any legitimate players while also detecting cheating players almost instantly.
+
 # Checks
 #### Flight
 - [x] Vertical velocity prediction check
@@ -39,3 +42,10 @@ Moonlight is an anticheat for Nukkit designed to prevent cheating. It is still i
 #### Example
 ![killaura](https://user-images.githubusercontent.com/54753631/167266772-8e479732-deb5-43aa-8727-51868ee78941.gif)
 ---
+#### BadPackets
+- [x] Pitch rotation check
+- `Detects bad rotations from modules such as Killaura and Scaffold!`
+- [x] Duplicate MovePlayerPacket check
+- `Detects bad rotations and movement cheats such as Killaura and Fly!`
+- [x] Self-hit check
+- `Detects any player attemping to hit themselves (self-hitting is a method of bypassing anticheat checks)!`
