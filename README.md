@@ -7,9 +7,9 @@ Moonlight is an anticheat for Nukkit designed to prevent cheating. It is still i
 # Checks
 #### Flight
 - [x] Vertical velocity prediction check
-- `Detects Airwalk, Fly, Glide, Jetpack, Highjump, Airswim, etc!`
+- `Detects just about any vertical movement hack!`
 - [x] Abnormal downwards velocity check
-- `Detects Airwalk, Glide, Jetpack!`
+- `Further detects any methods to bypass the prediction check!`
 #### Example
 ![flight](https://user-images.githubusercontent.com/54753631/167266467-64758286-1982-40a9-99dc-0f79c3ff84f1.gif)
 ---
