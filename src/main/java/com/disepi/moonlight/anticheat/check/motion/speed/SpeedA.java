@@ -16,7 +16,7 @@ public class SpeedA extends Check {
     // to achieve in vanilla.
 
     public void check(MovePlayerPacket e, PlayerData d, Player p) {
-        if (d.currentSpeed > 0.6475837678752038) // Check if distance is more than vanilla allowed move speed
+        if (d.currentSpeed > 0.6475837678752038 * d.speedMultiplier) // Check if distance is more than vanilla allowed move speed
             this.fail(p, "speed=" + d.currentSpeed); // We have failed the check if we reach this
     }
 

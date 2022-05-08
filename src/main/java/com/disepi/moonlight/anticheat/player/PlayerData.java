@@ -14,6 +14,13 @@ public class PlayerData {
     public Vector3 startFallPos = null; // Position of when the player started falling
     public long lastTime = 0; // Last time when the player sent a move packet in milliseconds
 
+    public int frictionLenientTicks = 0; // Ice blocks
+    public int gravityLenientTicks = 0; // Ladders, lava, water, cobwebs, slimeblocks etc.
+    public int blockAboveLenientTicks = 0; // Jumping below blocks
+    public int staircaseLenientTicks = 0; // Jumping on staircases
+
+    public float speedMultiplier = 1; // Speed potions affect this
+
     // Constructor
     public PlayerData(Player player) {
         this.lastX = (float) player.x;

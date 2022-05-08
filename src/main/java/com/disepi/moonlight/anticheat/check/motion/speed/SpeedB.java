@@ -17,10 +17,10 @@ public class SpeedB extends Check {
     // This doubles off as an ordinary speed check and a friction check.
 
     public void check(MovePlayerPacket e, PlayerData d, Player p) {
-        if (d.onGroundAlternate && d.onGroundTicks > 15 && d.currentSpeed > MotionUtils.GROUND_SPEED_DEFAULT) // If we are on the ground and speed is too high
+        if (d.onGroundAlternate && d.onGroundTicks > 15 && d.currentSpeed > MotionUtils.GROUND_SPEED_DEFAULT * d.speedMultiplier) // If we are on the ground and speed is too high
             fail(p, "speed=" + d.currentSpeed + ", onGroundTicks=" + d.onGroundTicks + ", type=GROUNDED"); // Failed check
         else { // We are not on the ground
-            double expected = MotionUtils.getExpectedSpeedValue(d.offGroundTicks) * 1.01; // Get expected value, multiply it by a tiny amount otherwise it can false flag in some cases
+            double expected = (MotionUtils.getExpectedSpeedValue(d.offGroundTicks) * 1.01) * (1 + ((d.speedMultiplier - 1) * 0.5f)); // Get expected value, multiply it by a tiny amount otherwise it can false flag in some cases
             if (d.currentSpeed > expected) // If expected speed is lower than the speed we received
                 fail(p, "expected=" + expected + ", received=" + d.currentSpeed + ", offGroundTicks=" + d.offGroundTicks + ", type=AIR"); // Failed check
         }
