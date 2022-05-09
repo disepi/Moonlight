@@ -37,6 +37,22 @@ public class onPlayerMove implements Listener {
         Player player = event.getPlayer(); // Get the player instance from the packet
         PlayerData data = Moonlight.getData(player); // Get the player data instance from Moonlight
 
+        // Teleport/respawn check
+        if(data.isTeleporting)
+        {
+            data.lastX = (float)data.teleportPos.x;
+            data.lastY = (float)data.teleportPos.y;
+            data.lastZ = (float)data.teleportPos.z;
+            if(Util.distance(x, y, z, (float)data.teleportPos.x, (float)data.teleportPos.y, (float)data.teleportPos.z) > 1.8)
+            {
+                event.setCancelled(true);
+                player.setPosition(data.teleportPos);
+                return;
+            }
+            else
+                data.isTeleporting = false;
+        }
+
         // Speed calculations
         data.currentSpeed = Util.distance(x, 0, z, data.lastX, 0, data.lastZ); // Get the current horizontal distance from the last position
         if (player.isSprinting()) data.sprintingTicks = 10;
@@ -46,6 +62,7 @@ public class onPlayerMove implements Listener {
             data.speedMultiplier *= 0.75f; // Check if the player is actually sprinting
         if (player.isSneaking()) data.speedMultiplier *= 0.75f; // Check if the player is sneaking
         data.jumpTicks--; // Decrease jump ticks
+        data.lerpTicks--; // Decrease lerp ticks
 
         // Check whether we are actually standing on a block
         Block block = WorldUtils.getNearestSolidBlock(x, y, z, player.level, 2); // Retrieve nearest solid block
@@ -74,6 +91,12 @@ public class onPlayerMove implements Listener {
 
         // Adjust speed to environment
         if (data.staircaseLenientTicks > 0) data.currentSpeed /= 4.0;
+        if (data.lerpTicks > 0) // Damage ticks
+        {
+            data.currentSpeed /= 3.25;
+            data.startFallPos = new Vector3(x,y,z);
+            data.fallingTicks = 7;
+        }
 
         if (data.isPlayerConsideredJumping()) {
             if (data.frictionLenientTicks > 0) data.currentSpeed /= 1.5;

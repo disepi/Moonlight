@@ -17,7 +17,7 @@ public class FlyA extends Check {
     // Check failure type "GLIDE" occurs when the player's downward velocity is too small to occur in vanilla gameplay.
 
     public void check(MovePlayerPacket e, PlayerData d, Player p) {
-        if (d.startFallPos == null || d.onGround || d.offGroundTicks < 10 || d.gravityLenientTicks > 0)
+        if (d.startFallPos == null || d.onGround || d.offGroundTicks < 10 || d.gravityLenientTicks > 0 || e.y < 0 || d.lerpTicks > 0)
             return; // Do not check if the player has not started falling.
 
         double gravity = d.startFallPos.y - e.y; // Player has started falling, get actual fall distance

@@ -34,6 +34,8 @@ public class Main extends PluginBase {
         mgr.registerEvents(new onPlayerMovedWrongly(), this);
         mgr.registerEvents(new onPlayerQuit(), this);
         mgr.registerEvents(new onPlayerPerformAction(), this);
+        mgr.registerEvents(new onPlayerSetMotion(), this);
+        mgr.registerEvents(new onPlayerSetPos(), this);
 
         // Setup invisible skin for FakePlayer
         PlayerUtils.setupSkinStream();
