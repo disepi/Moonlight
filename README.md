@@ -4,18 +4,27 @@ Moonlight is an anticheat for Nukkit designed to prevent cheating. It is still i
 
 #### Currently, Moonlight is only for experimental purposes. You can still use it, but expect to see bugs as it is not fully finished yet!
 
+# Purpose
+Moonlight is made to be lightweight while also detecting cheats fast and efficiently. The cheat checks in Moonlight are carefully made to avoid detecting any legitimate players while also detecting cheating players almost instantly.
+
 # Checks
 #### Flight
 - [x] Vertical velocity prediction check
-- `Detects Airwalk, Fly, Glide, Jetpack, Highjump, Airswim, etc!`
+- `Detects just about any vertical movement hack!`
 - [x] Abnormal downwards velocity check
-- `Detects Airwalk, Glide, Jetpack!`
+- `Further detects any methods to bypass the prediction check!`
 #### Example
 ![flight](https://user-images.githubusercontent.com/54753631/167266467-64758286-1982-40a9-99dc-0f79c3ff84f1.gif)
 ---
 #### Speed
 - [x] Abnormal speed distance check
-- `Limits movement speed to 13 blocks per second`
+- `Total limit of movement speed to 13 blocks per second`
+- [x] Off-ground friction check
+- `Checks movement friction off-ground. Detects most Bunnyhops!`
+- [x] Off-ground total speed limit
+- `Checks the off-ground speed for abnormal high values and limits to sprint speed, further detecting Bunnyhops!`
+- [x] On-ground total speed limit
+- `Checks the on-ground speed for abnormal high values and limits them. Detects vanilla ground-speeds!`
 #### Example
 ![speed](https://user-images.githubusercontent.com/54753631/167266602-5dea84e4-e3d8-4033-9800-1f793f2313f3.gif)
 ---
@@ -33,3 +42,10 @@ Moonlight is an anticheat for Nukkit designed to prevent cheating. It is still i
 #### Example
 ![killaura](https://user-images.githubusercontent.com/54753631/167266772-8e479732-deb5-43aa-8727-51868ee78941.gif)
 ---
+#### BadPackets
+- [x] Pitch rotation check
+- `Detects bad rotations from modules such as Killaura and Scaffold!`
+- [x] Duplicate MovePlayerPacket check
+- `Detects bad rotations and movement cheats such as Killaura and Fly!`
+- [x] Self-hit check
+- `Detects any player attemping to hit themselves (self-hitting is a method of bypassing anticheat checks)!`
