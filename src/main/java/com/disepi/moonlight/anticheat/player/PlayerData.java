@@ -27,6 +27,8 @@ public class PlayerData {
     public boolean isTeleporting = false;
     public Vector3 teleportPos;
 
+    public boolean isMobile = false;
+
     // Constructor
     public PlayerData(Player player) {
         this.lastX = (float) player.x;
@@ -34,6 +36,8 @@ public class PlayerData {
         this.lastZ = (float) player.z;
         this.teleportPos = new Vector3(player.x, player.y, player.z);
         this.isTeleporting = false;
+        int deviceOSType = player.getLoginChainData().getDeviceOS();
+        if (deviceOSType == 1 || deviceOSType == 2) isMobile = true;
     }
 
     // Removes the instance of the fake player from the world and the class instance

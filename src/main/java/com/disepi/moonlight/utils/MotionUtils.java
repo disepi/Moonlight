@@ -6,6 +6,7 @@ import cn.nukkit.potion.Effect;
 public class MotionUtils {
     public static final double PI = 3.1415927;
     public static final double DEG = PI / 180.0;
+    public static final double DEG_RAD = 180.0 / PI;
 
     // The default downwards velocity
     public static final double GRAVITY = 0.07840000093;
