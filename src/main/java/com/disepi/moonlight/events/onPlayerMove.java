@@ -40,10 +40,11 @@ public class onPlayerMove implements Listener {
         // Speed calculations
         data.currentSpeed = Util.distance(x, 0, z, data.lastX, 0, data.lastZ); // Get the current horizontal distance from the last position
         if (player.isSprinting()) data.sprintingTicks = 10;
-        else data.sprintingTicks--;
+        else data.sprintingTicks--; // Sprint tick stuff
         data.speedMultiplier = MotionUtils.getSpeedMultiplier(player); // Get speed multiplier from speed potions
         if (!data.isPlayerConsideredSprinting())
             data.speedMultiplier *= 0.75f; // Check if the player is actually sprinting
+        if (player.isSneaking()) data.speedMultiplier *= 0.75f; // Check if the player is sneaking
         data.jumpTicks--; // Decrease jump ticks
 
         // Check whether we are actually standing on a block
