@@ -27,7 +27,10 @@ public class PlayerData {
     public boolean isTeleporting = false;
     public Vector3 teleportPos;
 
-    public boolean isMobile = false;
+    public boolean isTouchscreen = false;
+
+    public Vector3 viewVector;
+
 
     // Constructor
     public PlayerData(Player player) {
@@ -37,7 +40,7 @@ public class PlayerData {
         this.teleportPos = new Vector3(player.x, player.y, player.z);
         this.isTeleporting = false;
         int deviceOSType = player.getLoginChainData().getDeviceOS();
-        if (deviceOSType == 1 || deviceOSType == 2) isMobile = true;
+        if (deviceOSType == 1 || deviceOSType == 2) isTouchscreen = true;
     }
 
     // Removes the instance of the fake player from the world and the class instance

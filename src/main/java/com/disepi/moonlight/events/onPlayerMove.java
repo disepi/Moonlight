@@ -64,6 +64,11 @@ public class onPlayerMove implements Listener {
         data.jumpTicks--; // Decrease jump ticks
         data.lerpTicks--; // Decrease lerp ticks
 
+        // View vector calculation
+        double cYaw = (packet.yaw + 90.0) * MotionUtils.DEG;
+        double cPitch = packet.pitch * -MotionUtils.DEG;
+        data.viewVector = new Vector3(Math.cos(cYaw), Math.sin(cPitch), Math.sin(cYaw));
+
         // Check whether we are actually standing on a block
         Block block = WorldUtils.getNearestSolidBlock(x, y, z, player.level, 2); // Retrieve nearest solid block
         data.onGround = !(block instanceof BlockAir); // Set on ground if block is not air (solid)

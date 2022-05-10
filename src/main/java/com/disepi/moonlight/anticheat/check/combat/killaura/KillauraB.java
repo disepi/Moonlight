@@ -60,12 +60,8 @@ public class KillauraB extends Check {
         d.fake.yaw = -180 + Util.rnd.nextInt(360); // Yaw
 
         // Calculate a position that is behind the player
-        double cYaw = (p.yaw + 90.0) * MotionUtils.DEG; // Calculate yaw
-        double cPitch = p.pitch * -MotionUtils.DEG; // Calculate pitch
         double distance = 3.1; // The distance away from our player
-
-        // Calculate position offset and set it for the bot.
-        d.fake.setPosition(new Vector3(p.x + -(Math.cos(cYaw) * Math.cos(cPitch) * distance), p.y - 1 + -(Math.sin(cPitch) * distance), p.z + -(Math.sin(cYaw) * Math.cos(cPitch) * distance)));
+        d.fake.setPosition(new Vector3(p.x + -(d.viewVector.x * distance), p.y + -(d.viewVector.y * distance), p.z + -(d.viewVector.z * distance)));
     }
 
 }

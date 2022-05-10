@@ -15,13 +15,11 @@ public class KillauraA extends Check {
 
 
     public void check(EntityDamageByEntityEvent e, PlayerData d, Player p) {
-        if (d.isMobile) return;
-        double cYaw = (p.yaw + 90.0) * MotionUtils.DEG;
-        double cPitch = p.pitch * -MotionUtils.DEG;
+        if (d.isTouchscreen) return;
         double distance = p.getPosition().distance(e.getEntity().getPosition());
-        double expansion = 0.5;
-        double verticalExpansion = 0.5;
-        if (!e.getEntity().getBoundingBox().expand(expansion, verticalExpansion, expansion).isVectorInside(new Vector3(p.x + (Math.cos(cYaw) * Math.cos(cPitch) * distance), p.y + 0.5 + (Math.sin(cPitch) * distance), p.z + (Math.sin(cYaw) * Math.cos(cPitch) * distance))))
+        double expansion = 0.6;
+        double verticalExpansion = 0.6;
+        if (!e.getEntity().getBoundingBox().expand(expansion, verticalExpansion, expansion).isVectorInside(new Vector3(p.x + (d.viewVector.x * distance), p.y + 0.5 + (d.viewVector.y * distance), p.z + (d.viewVector.z * distance))))
             this.fail(p, "attacker was not aiming at target");
     }
 
