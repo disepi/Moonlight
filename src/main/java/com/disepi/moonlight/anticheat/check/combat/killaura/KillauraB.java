@@ -13,7 +13,7 @@ import com.disepi.moonlight.utils.Util;
 public class KillauraB extends Check {
     // Constructor
     public KillauraB() {
-        super("KillauraB", "Attacking an invalid entity", 8);
+        super("KillauraB", "Attacking an invalid entity", 5);
     }
 
     // This check summons an invisible entity behind the attacker.
@@ -23,9 +23,13 @@ public class KillauraB extends Check {
 
     // Our attack callback
     public void check(EntityDamageByEntityEvent e, PlayerData d, Player p) {
+        reward(d, 0.5f);
+
         // If the attacker hits a fake player, they fail the check
-        if (e.getEntity() instanceof FakePlayer)
-            this.fail(p, "attacking an invalid entity"); // Check has been failed by the user
+        if (e.getEntity() instanceof FakePlayer) {
+            fail(p, "attacking an invalid entity"); // Check has been failed by the user
+            violate(p,d,1,true);
+        }
         else // Instead, if we don't hit a fake player but a real player/mob/entity, do this instead:
         {
             if (d.fake == null) // If we do not currently have a fake player active, we make one

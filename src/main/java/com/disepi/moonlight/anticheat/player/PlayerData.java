@@ -2,11 +2,17 @@ package com.disepi.moonlight.anticheat.player;
 
 import cn.nukkit.Player;
 import cn.nukkit.math.Vector3;
+import com.disepi.moonlight.anticheat.Moonlight;
+import com.disepi.moonlight.anticheat.check.Check;
 import com.disepi.moonlight.utils.FakePlayer;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class PlayerData {
 
     // Holds information about the players movement, statistics etc.
+    public float[] violationMap = new float[64]; // Violation map
     public FakePlayer fake; // The fake player entity used for some checks
     public float lastX, lastY, lastZ, lastPitch, lastYaw, predictedFallAmount, currentSpeed, lastSpeed, balance = 0; // Last player position info and other movement stuff
     public int onGroundTicks, offGroundTicks, fallingTicks = 0; // Ticks
@@ -22,19 +28,13 @@ public class PlayerData {
     public int sprintingTicks = 0; // Will stay at 10 when player is sprinting and decrease over ticks if they are not
     public int jumpTicks = 0; // Increases to a fixed value when a player jumps and decreases after
     public int lerpTicks = 0; // Increases to a fixed value when a player's motion gets set by the server
-
     public float speedMultiplier = 1; // Speed potions affect this
     public float lastLerpStrength = 1;
-
     public boolean isTeleporting = false;
     public Vector3 teleportPos;
-
     public boolean isTouchscreen = false;
-
     public Vector3 viewVector;
-
     public boolean resetMove = false;
-
 
     // Constructor
     public PlayerData(Player player) {
@@ -46,7 +46,6 @@ public class PlayerData {
         this.isTeleporting = false;
         int deviceOSType = player.getLoginChainData().getDeviceOS();
         if (deviceOSType == 1 || deviceOSType == 2) isTouchscreen = true;
-
         long currentTime = System.currentTimeMillis();
         this.lastTime = currentTime;
         this.lastSwingTime = currentTime;
@@ -64,6 +63,23 @@ public class PlayerData {
 
     public boolean isPlayerConsideredJumping() {
         return this.jumpTicks > 0;
+    }
+
+    public void violate(Check check, float amount)
+    {
+        this.violationMap[check.checkId] += amount;
+    }
+
+    public void reward(Check check, float amount)
+    {
+        this.violationMap[check.checkId] -= amount;
+        if(this.violationMap[check.checkId] < 0)
+            this.violationMap[check.checkId] = 0;
+    }
+
+    public float getViolationScale(Check check)
+    {
+        return this.violationMap[check.checkId];
     }
 
 }

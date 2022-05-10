@@ -1,6 +1,7 @@
 package com.disepi.moonlight.anticheat;
 
 import cn.nukkit.Player;
+import cn.nukkit.utils.TextFormat;
 import com.disepi.moonlight.anticheat.check.Check;
 import com.disepi.moonlight.anticheat.check.combat.killaura.KillauraA;
 import com.disepi.moonlight.anticheat.check.combat.killaura.KillauraB;
@@ -23,6 +24,8 @@ public class Moonlight {
     public static Map<Player, PlayerData> players = new HashMap<Player, PlayerData>(); // Stores data of players in the world
     public static CopyOnWriteArrayList<Check> checks = new CopyOnWriteArrayList<Check>(); // Stores all of the Check instances
     public static CopyOnWriteArrayList<FakePlayer> fakePlayers = new CopyOnWriteArrayList<FakePlayer>(); // Stores all of the instances of fake players
+    public static int checkAmount = 0; // Check amount
+    public static String stylizedChatString = TextFormat.DARK_GRAY + "[" + TextFormat.DARK_AQUA + "moonlight" + TextFormat.DARK_GRAY + "] " + TextFormat.WHITE;
 
     // Configuration values
     public static boolean cancelNukkitInvalidMove = true;
@@ -30,15 +33,19 @@ public class Moonlight {
     // Sets up the list of checks
     public static void initializeChecks() {
         checks.clear();
+
+        // Multi-level checks
         checks.add(new SpeedA());
         checks.add(new SpeedB());
         checks.add(new SpeedC());
         checks.add(new FlyA());
-        checks.add(new Timer());
         checks.add(new KillauraA());
         checks.add(new KillauraB());
-        checks.add(new NoSwing());
+
+        // Singular checks
         checks.add(new BadPackets());
+        checks.add(new NoSwing());
+        checks.add(new Timer());
     }
 
     // Returns the data instance of a player
@@ -48,7 +55,8 @@ public class Moonlight {
 
     // Inserts a data instance for the target player
     public static void addData(Player player) {
-        Moonlight.players.put(player, new PlayerData(player));
+        if(!player.isOp())
+            Moonlight.players.put(player, new PlayerData(player));
     }
 
     // Removes a data instance for the target player

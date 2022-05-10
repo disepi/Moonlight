@@ -16,6 +16,7 @@ public class onPlayerAttackEntity implements Listener {
             return; // If the attacker is not a player (for example Zombie hitting another Zombie), we skip the check
         Player player = (Player) event.getDamager(); // Returns the player
         PlayerData data = Moonlight.getData(player); // Get the data
+        if(data == null) return;
 
         for (Check check : Moonlight.checks) { // Loop through all of Moonlight's checks
             check.check(event, data, player); // Call the check function that wants an "EntityDamageByEntityEvent"
