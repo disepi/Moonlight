@@ -5,10 +5,12 @@ import com.disepi.moonlight.anticheat.check.Check;
 import com.disepi.moonlight.anticheat.check.combat.killaura.KillauraA;
 import com.disepi.moonlight.anticheat.check.combat.killaura.KillauraB;
 import com.disepi.moonlight.anticheat.check.exploit.badpackets.BadPackets;
+import com.disepi.moonlight.anticheat.check.exploit.noswing.NoSwing;
 import com.disepi.moonlight.anticheat.check.exploit.timer.Timer;
 import com.disepi.moonlight.anticheat.check.motion.fly.FlyA;
 import com.disepi.moonlight.anticheat.check.motion.speed.SpeedA;
 import com.disepi.moonlight.anticheat.check.motion.speed.SpeedB;
+import com.disepi.moonlight.anticheat.check.motion.speed.SpeedC;
 import com.disepi.moonlight.anticheat.player.PlayerData;
 import com.disepi.moonlight.utils.FakePlayer;
 import com.disepi.moonlight.utils.Util;
@@ -30,10 +32,12 @@ public class Moonlight {
         checks.clear();
         checks.add(new SpeedA());
         checks.add(new SpeedB());
+        checks.add(new SpeedC());
         checks.add(new FlyA());
         checks.add(new Timer());
         checks.add(new KillauraA());
         checks.add(new KillauraB());
+        checks.add(new NoSwing());
         checks.add(new BadPackets());
     }
 

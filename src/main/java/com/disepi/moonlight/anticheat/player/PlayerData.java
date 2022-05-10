@@ -11,8 +11,9 @@ public class PlayerData {
     public float lastX, lastY, lastZ, lastPitch, lastYaw, predictedFallAmount, currentSpeed, lastSpeed, balance = 0; // Last player position info and other movement stuff
     public int onGroundTicks, offGroundTicks, fallingTicks = 0; // Ticks
     public boolean onGround, onGroundAlternate = true; // onGround stores if the player is near ground, onGroundAlternate stores if the player is directly on ground
-    public Vector3 startFallPos = null; // Position of when the player started falling
+    public Vector3 startFallPos, lastGroundPos = null; // Position of when the player started falling
     public long lastTime = 0; // Last time when the player sent a move packet in milliseconds
+    public long lastSwingTime = 0; // Last time when the player swung
 
     public int frictionLenientTicks = 0; // Ice blocks
     public int gravityLenientTicks = 0; // Ladders, lava, water, cobwebs, slimeblocks etc.
@@ -23,6 +24,7 @@ public class PlayerData {
     public int lerpTicks = 0; // Increases to a fixed value when a player's motion gets set by the server
 
     public float speedMultiplier = 1; // Speed potions affect this
+    public float lastLerpStrength = 1;
 
     public boolean isTeleporting = false;
     public Vector3 teleportPos;
@@ -31,6 +33,8 @@ public class PlayerData {
 
     public Vector3 viewVector;
 
+    public boolean resetMove = false;
+
 
     // Constructor
     public PlayerData(Player player) {
@@ -38,9 +42,14 @@ public class PlayerData {
         this.lastY = (float) player.y;
         this.lastZ = (float) player.z;
         this.teleportPos = new Vector3(player.x, player.y, player.z);
+        this.lastGroundPos = this.teleportPos;
         this.isTeleporting = false;
         int deviceOSType = player.getLoginChainData().getDeviceOS();
         if (deviceOSType == 1 || deviceOSType == 2) isTouchscreen = true;
+
+        long currentTime = System.currentTimeMillis();
+        this.lastTime = currentTime;
+        this.lastSwingTime = currentTime;
     }
 
     // Removes the instance of the fake player from the world and the class instance

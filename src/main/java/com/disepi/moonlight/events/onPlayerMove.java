@@ -41,18 +41,15 @@ public class onPlayerMove implements Listener {
         PlayerData data = Moonlight.getData(player); // Get the player data instance from Moonlight
 
         // Teleport/respawn check
-        if(data.isTeleporting)
-        {
-            data.lastX = (float)data.teleportPos.x;
-            data.lastY = (float)data.teleportPos.y;
-            data.lastZ = (float)data.teleportPos.z;
-            if(Util.distance(x, y, z, (float)data.teleportPos.x, (float)data.teleportPos.y, (float)data.teleportPos.z) > 1.8)
-            {
+        if (data.isTeleporting) {
+            data.lastX = (float) data.teleportPos.x;
+            data.lastY = (float) data.teleportPos.y;
+            data.lastZ = (float) data.teleportPos.z;
+            if (Util.distance(x, y, z, (float) data.teleportPos.x, (float) data.teleportPos.y, (float) data.teleportPos.z) > 1.7) {
                 event.setCancelled(true);
-                player.setPosition(data.teleportPos);
+                player.teleport(new Vector3(data.teleportPos.x, data.teleportPos.y, data.teleportPos.z));
                 return;
-            }
-            else
+            } else
                 data.isTeleporting = false;
         }
 
@@ -92,11 +89,12 @@ public class onPlayerMove implements Listener {
         else data.gravityLenientTicks--;
 
         // Friction changing blocks
-        if (block instanceof BlockIce || block instanceof BlockIcePacked || block instanceof BlockWater || block instanceof BlockWaterStill || block instanceof BlockLava || block instanceof BlockLavaStill) data.frictionLenientTicks = 20;
+        if (block instanceof BlockIce || block instanceof BlockIcePacked || block instanceof BlockWater || block instanceof BlockWaterStill || block instanceof BlockLava || block instanceof BlockLavaStill || block instanceof BlockSlime || block instanceof BlockHayBale || block instanceof BlockBed)
+            data.frictionLenientTicks = 20;
         else data.frictionLenientTicks--;
 
         // Check for a block above us
-        if (!(WorldUtils.getNearestSolidBlock(x, y + 2.03, z, player.level, 1) instanceof BlockAir))
+        if (!(WorldUtils.getNearestSolidBlock(x, y + 2.53, z, player.level, 1) instanceof BlockAir))
             data.blockAboveLenientTicks = 20;
         else data.blockAboveLenientTicks--;
 
@@ -104,17 +102,18 @@ public class onPlayerMove implements Listener {
         // Adjust speed to environment
         if (data.lerpTicks > 0) // Damage ticks
         {
-            data.currentSpeed /= 3.25;
-            data.startFallPos = new Vector3(x,y,z);
-            data.fallingTicks = 7;
+            data.currentSpeed /= 1.0 + (data.lastLerpStrength * 1.5f);
+            data.startFallPos = new Vector3(x, y, z);
+            data.fallingTicks = 0;
         }
 
-        if (data.frictionLenientTicks > 0) data.currentSpeed /= 1.5;
+        if (data.frictionLenientTicks > 0) data.currentSpeed /= 2.0;
         if (data.blockAboveLenientTicks > 0) data.currentSpeed /= 2.4;
         if (data.staircaseLenientTicks > 0) data.currentSpeed /= 2.4;
         if (isWearingElytra) data.currentSpeed /= 4.0;
 
         packet.onGround = data.onGroundAlternate; // Our information is more accurate - we do NOT trust the client with the onGround value located inside the packet.
+        data.resetMove = false;
 
         // Cycles through and runs Moonlight's checks.
         if (player.gamemode != 1 && player.isAlive()) { // TODO: Implement this better and create creative mode specific checks or adjust checks to fit creative mode's movements. Creative mode has movement mechanics such as flying which can false flag a lot of checks.
@@ -122,6 +121,15 @@ public class onPlayerMove implements Listener {
                 check.check(packet, data, player); // Call the check function that wants a MovePlayerPacket
             }
         }
+
+        if(data.resetMove) // If we have to reset move
+        {
+            event.setCancelled(true);
+            return;
+        }
+
+        if (data.onGroundAlternate) // set onground state
+            data.lastGroundPos = new Vector3(x, y - (1.62 - 0.000001), z);
 
         // Calculate off/on ground ticks
         if (data.onGround) { // If we are onGround
@@ -150,15 +158,14 @@ public class onPlayerMove implements Listener {
 
             Effect jumpBoostEffect = player.getEffect(8); // Get jump boost effect
             Effect levitationEffect = player.getEffect(24); // Get levitation effect
-            if(levitationEffect != null || isWearingElytra) data.offGroundTicks = 0; // Fix levitation false flags
+            if (levitationEffect != null || isWearingElytra) data.offGroundTicks = 0; // Fix levitation false flags
 
             float differenceValue = (data.lastY - y);
             if (data.startFallPos == null && (y < data.lastY || data.offGroundTicks >= (jumpBoostEffect != null ? 8 + jumpBoostEffect.getAmplifier() : 6) || differenceValue > 0.0 && differenceValue < 0.07839966)) // Check if the start fall position is already defined, if not, we then use the mentioned methods
             {
                 data.startFallPos = new Vector3(x, y, z); // Set the start fall position value
-                if(jumpBoostEffect != null) data.offGroundTicks = 7; // Jump boost fix
-            }
-            else
+                if (jumpBoostEffect != null) data.offGroundTicks = 7; // Jump boost fix
+            } else
                 data.fallingTicks++; // We have already started falling - increment falling ticks.
         }
 

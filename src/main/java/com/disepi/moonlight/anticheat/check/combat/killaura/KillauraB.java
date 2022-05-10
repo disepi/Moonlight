@@ -31,7 +31,7 @@ public class KillauraB extends Check {
             if (d.fake == null) // If we do not currently have a fake player active, we make one
             {
                 d.fake = PlayerUtils.getFakePlayer(p); // Assign the fake player to the player's data
-                d.fake.spawn(p); // Spawn it for the user
+                d.fake.spawnFakePlayer(p); // Spawn it for the user
             } else // If we already have a fake player active
                 d.fake.ticks = 0; // Reset the timer so the fake player lasts longer
         }
@@ -45,8 +45,7 @@ public class KillauraB extends Check {
 
         if (d.fake.ticks > 100) // If we do not attack another entity for 100 ticks (5 seconds), we de-spawn the entity
         {
-            d.fake.despawnFromAll(); // De-spawn the entity
-            d.fake = null; // Remove the fake player instance in our player data
+            d.destructFakePlayer(); // De-spawn the entity
             return; // Return to avoid errors
         }
 

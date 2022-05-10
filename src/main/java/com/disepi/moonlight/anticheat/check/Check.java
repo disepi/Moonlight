@@ -2,6 +2,7 @@ package com.disepi.moonlight.anticheat.check;
 
 import cn.nukkit.Player;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
+import cn.nukkit.math.Vector3;
 import cn.nukkit.network.protocol.MovePlayerPacket;
 import cn.nukkit.network.protocol.PlayerActionPacket;
 import cn.nukkit.utils.TextFormat;
@@ -23,6 +24,17 @@ public class Check {
     public void fail(Player p, String debug) {
         String message = TextFormat.DARK_GRAY + "[" + TextFormat.DARK_AQUA + "moonlight" + TextFormat.DARK_GRAY + "] " + TextFormat.WHITE + p.getName() + TextFormat.GRAY + " failed " + TextFormat.WHITE + this.name + TextFormat.DARK_GRAY + " [" + debug + "]";
         Moonlight.sendMessageToModerators(p, message);
+    }
+
+    public void lagback(Player p, PlayerData d, Vector3 pos) {
+        d.resetMove = true;
+        d.teleportPos = pos;
+        d.isTeleporting = true;
+        p.teleport(pos);
+    }
+
+    public void lagback(Player p, PlayerData d) {
+        this.lagback(p, d, d.lastGroundPos);
     }
 
     // Below are override functions - they do nothing but they get overridden in standalone checks

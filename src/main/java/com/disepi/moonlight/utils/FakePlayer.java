@@ -22,9 +22,10 @@ public class FakePlayer extends EntityHuman {
     }
 
     // Spawns the fake player if it is not spawned in already
-    public void spawn(Player player) {
+    public void spawnFakePlayer(Player player) {
         if (!this.hasSpawned.containsValue(player)) {
             Moonlight.fakePlayers.add(this);
+            //this.despawnFromAll();
             this.spawnTo(player);
         }
     }

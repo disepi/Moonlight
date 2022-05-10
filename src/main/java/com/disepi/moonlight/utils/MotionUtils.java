@@ -12,7 +12,7 @@ public class MotionUtils {
     public static final double GRAVITY = 0.07840000093;
 
     // The maximum speed you can reach while on ground
-    public static final double GROUND_SPEED_DEFAULT = 0.28892872;
+    public static final double GROUND_SPEED_DEFAULT = 0.38573077;
 
     // Below are arrays of packet logged vanilla values.
     // This may not be the best solution but it saves performance from not needing to do the math and also because it is accurate and easier to create checks with

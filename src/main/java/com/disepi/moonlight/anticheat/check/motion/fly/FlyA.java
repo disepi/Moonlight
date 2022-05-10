@@ -24,9 +24,16 @@ public class FlyA extends Check {
         double predictedGravity = MotionUtils.getExpectedFallValue(d.offGroundTicks - 7); // Get predicted fall distance by the server
 
         if (predictedGravity - 0.0005 > gravity) // Check if expected velocity was higher than what we received from the client
+        {
             this.fail(p, "gravity=" + gravity + ", predictedGravity=" + predictedGravity + ", offset=" + (predictedGravity - gravity) + ", type=fly"); // We have failed the check
+            this.lagback(p, d);
+        }
+
         if (d.offGroundTicks > 10 && gravity < 0.75) // Check if received velocity is impossible in vanilla gameplay
+        {
             this.fail(p, "gravity=" + gravity + ", predictedGravity=" + predictedGravity + ", offset=" + (predictedGravity - gravity) + ", type=glide"); // We have failed the check
+            this.lagback(p, d);
+        }
     }
 
 }
