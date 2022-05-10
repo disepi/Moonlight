@@ -7,7 +7,6 @@ import cn.nukkit.network.protocol.MovePlayerPacket;
 import com.disepi.moonlight.anticheat.check.Check;
 import com.disepi.moonlight.anticheat.player.PlayerData;
 import com.disepi.moonlight.utils.FakePlayer;
-import com.disepi.moonlight.utils.MotionUtils;
 import com.disepi.moonlight.utils.PlayerUtils;
 import com.disepi.moonlight.utils.Util;
 

@@ -5,8 +5,11 @@ import cn.nukkit.block.*;
 import cn.nukkit.event.EventHandler;
 import cn.nukkit.event.Listener;
 import cn.nukkit.event.server.DataPacketReceiveEvent;
+import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemElytra;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.network.protocol.MovePlayerPacket;
+import cn.nukkit.potion.Effect;
 import com.disepi.moonlight.anticheat.Moonlight;
 import com.disepi.moonlight.anticheat.check.Check;
 import com.disepi.moonlight.anticheat.player.PlayerData;
@@ -69,13 +72,17 @@ public class onPlayerMove implements Listener {
         double cPitch = packet.pitch * -MotionUtils.DEG;
         data.viewVector = new Vector3(Math.cos(cYaw), Math.sin(cPitch), Math.sin(cYaw));
 
+        Item chestplateItem = player.getInventory().getArmorItem(1);
+        boolean isWearingElytra = chestplateItem instanceof ItemElytra;
+
         // Check whether we are actually standing on a block
         Block block = WorldUtils.getNearestSolidBlock(x, y, z, player.level, 2); // Retrieve nearest solid block
+        Block blockAboveNearestBlock = player.level.getBlock((int) block.x, (int) block.y + 1, (int) block.z);
         data.onGround = !(block instanceof BlockAir); // Set on ground if block is not air (solid)
         data.onGroundAlternate = !(player.level.getBlock((int) x, (int) (y - 1.62), (int) z) instanceof BlockAir); // Check if we are DIRECTLY under a block
 
         // Stair check - we also have to check for the above block because sometimes it
-        if (block instanceof BlockStairs || player.level.getBlock((int) block.x, (int) block.y + 1, (int) block.z) instanceof BlockStairs)
+        if (block instanceof BlockStairs || blockAboveNearestBlock instanceof BlockStairs)
             data.staircaseLenientTicks = 20;
         else data.staircaseLenientTicks--;
 
@@ -85,7 +92,7 @@ public class onPlayerMove implements Listener {
         else data.gravityLenientTicks--;
 
         // Friction changing blocks
-        if (block instanceof BlockIce || block instanceof BlockIcePacked) data.frictionLenientTicks = 20;
+        if (block instanceof BlockIce || block instanceof BlockIcePacked || block instanceof BlockWater || block instanceof BlockWaterStill || block instanceof BlockLava || block instanceof BlockLavaStill) data.frictionLenientTicks = 20;
         else data.frictionLenientTicks--;
 
         // Check for a block above us
@@ -95,7 +102,6 @@ public class onPlayerMove implements Listener {
 
 
         // Adjust speed to environment
-        if (data.staircaseLenientTicks > 0) data.currentSpeed /= 4.0;
         if (data.lerpTicks > 0) // Damage ticks
         {
             data.currentSpeed /= 3.25;
@@ -103,10 +109,10 @@ public class onPlayerMove implements Listener {
             data.fallingTicks = 7;
         }
 
-        if (data.isPlayerConsideredJumping()) {
-            if (data.frictionLenientTicks > 0) data.currentSpeed /= 1.5;
-            if (data.blockAboveLenientTicks > 0) data.currentSpeed /= 2.4;
-        }
+        if (data.frictionLenientTicks > 0) data.currentSpeed /= 1.5;
+        if (data.blockAboveLenientTicks > 0) data.currentSpeed /= 2.4;
+        if (data.staircaseLenientTicks > 0) data.currentSpeed /= 2.4;
+        if (isWearingElytra) data.currentSpeed /= 4.0;
 
         packet.onGround = data.onGroundAlternate; // Our information is more accurate - we do NOT trust the client with the onGround value located inside the packet.
 
@@ -142,9 +148,16 @@ public class onPlayerMove implements Listener {
             // 3.) Check if the fall distance from last vertical position is abnormal. This is more of a
             // check to detect fly cheats faster instead of falling
 
+            Effect jumpBoostEffect = player.getEffect(8); // Get jump boost effect
+            Effect levitationEffect = player.getEffect(24); // Get levitation effect
+            if(levitationEffect != null || isWearingElytra) data.offGroundTicks = 0; // Fix levitation false flags
+
             float differenceValue = (data.lastY - y);
-            if (data.startFallPos == null && (y < data.lastY || data.offGroundTicks >= 6 || differenceValue > 0.0 && differenceValue < 0.07839966)) // Check if the start fall position is already defined, if not, we then use the mentioned methods
+            if (data.startFallPos == null && (y < data.lastY || data.offGroundTicks >= (jumpBoostEffect != null ? 8 + jumpBoostEffect.getAmplifier() : 6) || differenceValue > 0.0 && differenceValue < 0.07839966)) // Check if the start fall position is already defined, if not, we then use the mentioned methods
+            {
                 data.startFallPos = new Vector3(x, y, z); // Set the start fall position value
+                if(jumpBoostEffect != null) data.offGroundTicks = 7; // Jump boost fix
+            }
             else
                 data.fallingTicks++; // We have already started falling - increment falling ticks.
         }

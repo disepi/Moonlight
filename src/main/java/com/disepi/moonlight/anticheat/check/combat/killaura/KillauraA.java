@@ -5,7 +5,6 @@ import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.math.Vector3;
 import com.disepi.moonlight.anticheat.check.Check;
 import com.disepi.moonlight.anticheat.player.PlayerData;
-import com.disepi.moonlight.utils.MotionUtils;
 
 public class KillauraA extends Check {
 

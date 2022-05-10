@@ -23,7 +23,7 @@ public class WorldUtils {
 
     // Checks surroundings to retrieve the nearest solid block
     public static Block getNearestSolidBlock(Vector3 pos, Level level, int radius) {
-        double value = 1.62 + 0.01; // getEyeHeight();
+        double value = 1.62 + 0.01 + 0.5; // getEyeHeight();
         Block under = level.getBlock((int) pos.x, (int) (pos.y - value), (int) pos.z); // get block
         if (!(under instanceof BlockAir)) // check if it isn't air
             return under; // return under block
