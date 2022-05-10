@@ -53,6 +53,7 @@ public class PlayerData {
 
     // Removes the instance of the fake player from the world and the class instance
     public void destructFakePlayer() {
+        this.fake.getLevel().removeEntity(this.fake);
         this.fake.despawnFromAll();
         this.fake = null;
     }

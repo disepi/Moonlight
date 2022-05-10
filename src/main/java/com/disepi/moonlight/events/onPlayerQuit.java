@@ -12,8 +12,7 @@ public class onPlayerQuit implements Listener {
     public void onPlayerQuit(PlayerQuitEvent event) {
         PlayerData data = Moonlight.getData(event.getPlayer());
         if (data.fake != null) {
-            data.fake.despawnFromAll();
-            data.fake = null;
+            data.destructFakePlayer();
         }
         Moonlight.removeData(event.getPlayer());
     }
