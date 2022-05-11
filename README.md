@@ -25,6 +25,10 @@ Moonlight is made to be lightweight while also detecting cheats fast and efficie
 - `Checks the off-ground speed for abnormal high values and limits to sprint speed, further detecting Bunnyhops!`
 - [x] On-ground total speed limit
 - `Checks the on-ground speed for abnormal high values and limits them. Detects vanilla ground-speeds!`
+- [x] Jump height check
+- `Checks the jump height for abnormal low values. Detects low-hops and Y-ports!`
+- [x] Strafe movement check
+- `Checks the strafe movement for abornmal high values. Detects most Bunnyhops!`
 #### Example
 ![speed](https://user-images.githubusercontent.com/54753631/167266602-5dea84e4-e3d8-4033-9800-1f793f2313f3.gif)
 ---
@@ -49,3 +53,9 @@ Moonlight is made to be lightweight while also detecting cheats fast and efficie
 - `Detects bad rotations and movement cheats such as Killaura and Fly!`
 - [x] Self-hit check
 - `Detects any player attemping to hit themselves (self-hitting is a method of bypassing anticheat checks)!`
+---
+#### NoSwing
+- [x] Combat swing check
+- `Verifies that the client follows vanilla protocol while attacking entities. Detects some Killauras!`
+- [x] World swing check
+- `Verifies that the client follows vanilla protocol while destroying blocks.`
