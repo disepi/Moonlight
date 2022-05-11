@@ -21,11 +21,15 @@ public class SpeedD extends Check {
     public void check(MovePlayerPacket e, PlayerData d, Player p) {
         reward(d, 0.25f); // Violate
 
+        // Fix falses
+        if(d.gravityLenientTicks > 0 || d.blockAboveLenientTicks > 0 || d.lerpTicks > 0)
+            return;
+
         // Catches teleports
         float value = e.y - d.lastY;
         if (value >= 1.0f) doFailCheck(p, d, value);
 
-        if (d.onGroundAlternate || !d.onGroundAlternateLast || d.offGroundTicks != 0 || d.gravityLenientTicks > 0 || d.blockAboveLenientTicks > 0)
+        if (d.onGroundAlternate || !d.onGroundAlternateLast || d.offGroundTicks != 0)
             return;
 
         // Jump height
