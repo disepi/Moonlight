@@ -19,8 +19,8 @@ public class SpeedA extends Check {
         reward(d, 0.1f); // Violation reward
         if (d.currentSpeed > 0.6475837678752038 * d.speedMultiplier) // Check if distance is more than vanilla allowed move speed
         {
-            fail(p, "speed=" + d.currentSpeed + ", vl=" + (int)getViolationScale(d)); // We have failed the check if we reach this
-            violate(p,d,1,true); // Violate
+            fail(p, "speed=" + d.currentSpeed + ", vl=" + (int) getViolationScale(d)); // We have failed the check if we reach this
+            violate(p, d, 1, true); // Violate
         }
     }
 

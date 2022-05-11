@@ -2,12 +2,8 @@ package com.disepi.moonlight.anticheat.player;
 
 import cn.nukkit.Player;
 import cn.nukkit.math.Vector3;
-import com.disepi.moonlight.anticheat.Moonlight;
 import com.disepi.moonlight.anticheat.check.Check;
 import com.disepi.moonlight.utils.FakePlayer;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class PlayerData {
 
@@ -66,20 +62,17 @@ public class PlayerData {
         return this.jumpTicks > 0;
     }
 
-    public void violate(Check check, float amount)
-    {
+    public void violate(Check check, float amount) {
         this.violationMap[check.checkId] += amount;
     }
 
-    public void reward(Check check, float amount)
-    {
+    public void reward(Check check, float amount) {
         this.violationMap[check.checkId] -= amount;
-        if(this.violationMap[check.checkId] < 0)
+        if (this.violationMap[check.checkId] < 0)
             this.violationMap[check.checkId] = 0;
     }
 
-    public float getViolationScale(Check check)
-    {
+    public float getViolationScale(Check check) {
         return this.violationMap[check.checkId];
     }
 

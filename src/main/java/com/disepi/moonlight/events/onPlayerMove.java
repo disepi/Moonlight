@@ -39,7 +39,7 @@ public class onPlayerMove implements Listener {
         // Set/get data
         Player player = event.getPlayer(); // Get the player instance from the packet
         PlayerData data = Moonlight.getData(player); // Get the player data instance from Moonlight
-        if(data == null) return;
+        if (data == null) return;
 
         // Teleport/respawn check
         if (data.isTeleporting) {
@@ -123,7 +123,7 @@ public class onPlayerMove implements Listener {
             }
         }
 
-        if(data.resetMove) // If we have to reset move
+        if (data.resetMove) // If we have to reset move
         {
             event.setCancelled(true);
             return;

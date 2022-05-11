@@ -28,9 +28,8 @@ public class KillauraB extends Check {
         // If the attacker hits a fake player, they fail the check
         if (e.getEntity() instanceof FakePlayer) {
             fail(p, "attacking an invalid entity"); // Check has been failed by the user
-            violate(p,d,1,true);
-        }
-        else // Instead, if we don't hit a fake player but a real player/mob/entity, do this instead:
+            violate(p, d, 1, true);
+        } else // Instead, if we don't hit a fake player but a real player/mob/entity, do this instead:
         {
             if (d.fake == null) // If we do not currently have a fake player active, we make one
             {

@@ -26,6 +26,7 @@ public class Moonlight {
     public static CopyOnWriteArrayList<FakePlayer> fakePlayers = new CopyOnWriteArrayList<FakePlayer>(); // Stores all of the instances of fake players
     public static int checkAmount = 0; // Check amount
     public static String stylizedChatString = TextFormat.DARK_GRAY + "[" + TextFormat.DARK_AQUA + "moonlight" + TextFormat.DARK_GRAY + "] " + TextFormat.WHITE;
+    public static String kickString = TextFormat.DARK_GRAY + "Client modifications detected.";
 
     // Configuration values
     public static boolean cancelNukkitInvalidMove = true;
@@ -55,7 +56,7 @@ public class Moonlight {
 
     // Inserts a data instance for the target player
     public static void addData(Player player) {
-        if(!player.isOp())
+        if (!player.isOp())
             Moonlight.players.put(player, new PlayerData(player));
     }
 

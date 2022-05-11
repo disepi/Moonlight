@@ -1,20 +1,17 @@
 package com.disepi.moonlight.anticheat.check;
 
 import cn.nukkit.Player;
-import cn.nukkit.entity.weather.EntityLightning;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
-import cn.nukkit.level.Position;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.DoubleTag;
-import cn.nukkit.nbt.tag.FloatTag;
-import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.network.protocol.DisconnectPacket;
 import cn.nukkit.network.protocol.MovePlayerPacket;
 import cn.nukkit.network.protocol.PlayerActionPacket;
 import cn.nukkit.utils.TextFormat;
 import com.disepi.moonlight.anticheat.Moonlight;
 import com.disepi.moonlight.anticheat.player.PlayerData;
-import com.disepi.moonlight.utils.Util;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class Check {
     public String name, detection; // The basic information about the check
@@ -49,28 +46,39 @@ public class Check {
     }
 
     // Violation functions
-    public void violate(Player player, PlayerData data, float amount, boolean punish)
-    {
+    public void violate(Player player, PlayerData data, float amount, boolean punish) {
         data.violationMap[this.checkId] += amount;
-        if(punish && getViolationScale(data) > this.maxViolationScale) punish(player,data); // We failed the check repeatedly, punish
+        if (punish && getViolationScale(data) > this.maxViolationScale)
+            punish(player, data); // We failed the check repeatedly, punish
     }
-    public void reward(PlayerData data, float amount)
-    {
+
+    public void reward(PlayerData data, float amount) {
         data.violationMap[this.checkId] -= amount;
-        if(data.violationMap[this.checkId] < 0)
+        if (data.violationMap[this.checkId] < 0)
             data.violationMap[this.checkId] = 0;
     }
-    public float getViolationScale(PlayerData data)
-    {
+
+    public float getViolationScale(PlayerData data) {
         return data.violationMap[this.checkId];
     }
 
     // Punishes the player.
-    public void punish(Player p, PlayerData d)
-    {
+    public void punish(Player p, PlayerData d) {
         String message = Moonlight.stylizedChatString + p.getName() + TextFormat.GRAY + " was " + TextFormat.DARK_RED + "punished" + TextFormat.DARK_GRAY + ". [" + this.name + "]";
         Moonlight.sendMessageToModerators(p, message);
-        p.kick();
+
+        // Disconnect packet
+        DisconnectPacket disconnectPacket = new DisconnectPacket();
+        disconnectPacket.hideDisconnectionScreen = false;
+        disconnectPacket.message = Moonlight.kickString;
+        p.dataPacket(disconnectPacket);
+
+        // Packet kick after 1000ms
+        (new Timer()).schedule(new TimerTask() {
+            public void run() {
+                p.kick();
+            }
+        }, 1000L);
     }
 
     // Below are override functions - they do nothing but they get overridden in standalone checks

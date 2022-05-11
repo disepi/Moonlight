@@ -20,12 +20,11 @@ public class onPlayerPerformAction implements Listener {
 
         PlayerActionPacket packet = (PlayerActionPacket) event.getPacket();
         PlayerData data = Moonlight.getData(event.getPlayer());
-        if(data == null) return;
+        if (data == null) return;
 
         if (packet.action == PlayerActionPacket.ACTION_JUMP)
             data.jumpTicks = 20; // Set jump ticks
-        else if(packet.action == PlayerActionPacket.ACTION_START_BREAK)
-        {
+        else if (packet.action == PlayerActionPacket.ACTION_START_BREAK) {
             Player player = event.getPlayer();
             for (Check check : Moonlight.checks) { // Loop through all checks in Moonlight's list
                 check.check(packet, data, player); // Call the check function that wants a PlayerActionPacket
