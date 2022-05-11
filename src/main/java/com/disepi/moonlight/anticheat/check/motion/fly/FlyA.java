@@ -32,10 +32,10 @@ public class FlyA extends Check {
         // GLIDE type check
         float diffVal = Math.abs(e.y - d.lastY);
         if (!d.onGround)
-            checkSmallMovement(p, d, diffVal, 0.0029997826f);
+            checkSmallMovement(p, d, diffVal, 0.0010004044f);
         else return;
 
-        if (d.startFallPos == null || d.offGroundTicks < 10 || d.gravityLenientTicks > 0 || e.y < 0 || d.lerpTicks > 0)
+        if (d.startFallPos == null || d.offGroundTicks < 10)
             return; // Do not check if the player has not started falling.
 
         double gravity = d.startFallPos.y - e.y; // Player has started falling, get actual fall distance
@@ -58,7 +58,7 @@ public class FlyA extends Check {
         }
 
         // GLIDE type check
-        checkSmallMovement(p, d, diffVal, 0.44479942f);
+        checkSmallMovement(p, d, diffVal, 0.37389994f);
     }
 
 }

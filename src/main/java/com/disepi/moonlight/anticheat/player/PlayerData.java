@@ -12,7 +12,7 @@ public class PlayerData {
     public FakePlayer fake; // The fake player entity used for some checks
     public float lastX, lastY, lastZ, lastPitch, lastYaw, predictedFallAmount, currentSpeed, lastSpeed, balance = 0; // Last player position info and other movement stuff
     public int onGroundTicks, offGroundTicks, fallingTicks = 0; // Ticks
-    public boolean onGround, onGroundAlternate = true; // onGround stores if the player is near ground, onGroundAlternate stores if the player is directly on ground
+    public boolean onGround, onGroundAlternate, onGroundAlternateLast = true; // onGround stores if the player is near ground, onGroundAlternate stores if the player is directly on ground
     public Vector3 startFallPos, lastGroundPos = null; // Position of when the player started falling
     public long lastTime = 0; // Last time when the player sent a move packet in milliseconds
     public long lastSwingTime = 0; // Last time when the player swung
@@ -25,6 +25,17 @@ public class PlayerData {
     public int jumpTicks = 0; // Increases to a fixed value when a player jumps and decreases after
     public int lerpTicks = 0; // Increases to a fixed value when a player's motion gets set by the server
     public float speedMultiplier = 1; // Speed potions affect this
+
+    public int speedPotionLenientTicks = 0;
+    public int levitationPotionLenientTicks = 0;
+    public int jumpPotionLenientTicks = 0;
+
+    public int lastSpeedAmplifier = 0;
+    public int lastLevitationAmplifier = 0;
+    public int lastJumpAmplifier = 0;
+
+    public int elytraWornLenience = 0;
+
     public float lastLerpStrength = 1;
     public boolean isTeleporting = false;
     public Vector3 teleportPos;
@@ -35,11 +46,12 @@ public class PlayerData {
     // Constructor
     public PlayerData(Player player) {
         this.lastX = (float) player.x;
-        this.lastY = (float) player.y;
+        this.lastY = (float) player.y + 1.62f;
         this.lastZ = (float) player.z;
         this.teleportPos = new Vector3(player.x, player.y, player.z);
         this.lastGroundPos = this.teleportPos;
         this.isTeleporting = false;
+        this.onGroundAlternateLast = false;
         int deviceOSType = player.getLoginChainData().getDeviceOS();
         if (deviceOSType == 1 || deviceOSType == 2) isTouchscreen = true;
         long currentTime = System.currentTimeMillis();

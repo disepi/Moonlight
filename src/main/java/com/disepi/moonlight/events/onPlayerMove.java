@@ -19,6 +19,8 @@ import com.disepi.moonlight.utils.WorldUtils;
 
 public class onPlayerMove implements Listener {
 
+    public static int DEFAULT_LENIENCE = 20;
+
     // Called upon a player moves (when a MovePlayerPacket gets received).
     // I did not hook the PlayerMove event because it delayed movements to the next server tick;
     // For example: a player could possibly move twice in a single server tick and the
@@ -44,7 +46,7 @@ public class onPlayerMove implements Listener {
         // Teleport/respawn check
         if (data.isTeleporting) {
             data.lastX = (float) data.teleportPos.x;
-            data.lastY = (float) data.teleportPos.y;
+            data.lastY = (float) data.teleportPos.y+1.62f;
             data.lastZ = (float) data.teleportPos.z;
             if (Util.distance(x, y, z, (float) data.teleportPos.x, (float) data.teleportPos.y, (float) data.teleportPos.z) > 1.7) {
                 event.setCancelled(true);
@@ -54,11 +56,44 @@ public class onPlayerMove implements Listener {
                 data.isTeleporting = false;
         }
 
+        // Elytra
+        Item chestplateItem = player.getInventory().getArmorItem(1);
+        if(chestplateItem instanceof ItemElytra) data.elytraWornLenience = DEFAULT_LENIENCE;
+        else data.elytraWornLenience--;
+        boolean isWearingElytra = data.elytraWornLenience > 0;
+
+        // Jump boost
+        Effect jumpBoostEffect = player.getEffect(8); // Get jump boost effect
+        if(jumpBoostEffect != null)
+        {
+            data.lastJumpAmplifier = jumpBoostEffect.getAmplifier();
+            data.jumpPotionLenientTicks = DEFAULT_LENIENCE;
+        }
+        else
+            data.jumpPotionLenientTicks--;
+
+        // Speed
+        Effect speedEffect = player.getEffect(1); // Get jump boost effect
+        if(speedEffect != null)
+        {
+            data.lastSpeedAmplifier = speedEffect.getAmplifier();
+            data.speedPotionLenientTicks = DEFAULT_LENIENCE;
+        }
+        else
+            data.speedPotionLenientTicks--;
+
+        // Levitation
+        Effect levitationEffect = player.getEffect(24); // Get levitation effect
+        if(levitationEffect != null)
+            data.levitationPotionLenientTicks = DEFAULT_LENIENCE;
+        else
+            data.levitationPotionLenientTicks--;
+
         // Speed calculations
         data.currentSpeed = Util.distance(x, 0, z, data.lastX, 0, data.lastZ); // Get the current horizontal distance from the last position
-        if (player.isSprinting()) data.sprintingTicks = 10;
+        if (player.isSprinting()) data.sprintingTicks = DEFAULT_LENIENCE;
         else data.sprintingTicks--; // Sprint tick stuff
-        data.speedMultiplier = MotionUtils.getSpeedMultiplier(player); // Get speed multiplier from speed potions
+        data.speedMultiplier = MotionUtils.getSpeedMultiplier(data); // Get speed multiplier from speed potions
         if (!data.isPlayerConsideredSprinting())
             data.speedMultiplier *= 0.75f; // Check if the player is actually sprinting
         if (player.isSneaking()) data.speedMultiplier *= 0.75f; // Check if the player is sneaking
@@ -70,33 +105,31 @@ public class onPlayerMove implements Listener {
         double cPitch = packet.pitch * -MotionUtils.DEG;
         data.viewVector = new Vector3(Math.cos(cYaw), Math.sin(cPitch), Math.sin(cYaw));
 
-        Item chestplateItem = player.getInventory().getArmorItem(1);
-        boolean isWearingElytra = chestplateItem instanceof ItemElytra;
-
         // Check whether we are actually standing on a block
         Block block = WorldUtils.getNearestSolidBlock(x, y, z, player.level, 2); // Retrieve nearest solid block
         Block blockAboveNearestBlock = player.level.getBlock((int) block.x, (int) block.y + 1, (int) block.z);
         data.onGround = !(block instanceof BlockAir); // Set on ground if block is not air (solid)
+        data.onGroundAlternateLast = data.onGroundAlternate;
         data.onGroundAlternate = !(player.level.getBlock((int) x, (int) (y - 1.62), (int) z) instanceof BlockAir); // Check if we are DIRECTLY under a block
 
         // Stair check - we also have to check for the above block because sometimes it
         if (block instanceof BlockStairs || blockAboveNearestBlock instanceof BlockStairs)
-            data.staircaseLenientTicks = 20;
+            data.staircaseLenientTicks = DEFAULT_LENIENCE;
         else data.staircaseLenientTicks--;
 
         // Gravity changing blocks
         if (block instanceof BlockLadder || block instanceof BlockWater || block instanceof BlockWaterStill || block instanceof BlockLava || block instanceof BlockLavaStill || block instanceof BlockVine || block instanceof BlockCobweb || block instanceof BlockSlime || block instanceof BlockHayBale || block instanceof BlockBed)
-            data.gravityLenientTicks = 20;
+            data.gravityLenientTicks = DEFAULT_LENIENCE;
         else data.gravityLenientTicks--;
 
         // Friction changing blocks
         if (block instanceof BlockIce || block instanceof BlockIcePacked || block instanceof BlockWater || block instanceof BlockWaterStill || block instanceof BlockLava || block instanceof BlockLavaStill || block instanceof BlockSlime || block instanceof BlockHayBale || block instanceof BlockBed)
-            data.frictionLenientTicks = 20;
+            data.frictionLenientTicks = (int)(DEFAULT_LENIENCE*1.5f);
         else data.frictionLenientTicks--;
 
         // Check for a block above us
         if (!(WorldUtils.getNearestSolidBlock(x, y + 2.53, z, player.level, 1) instanceof BlockAir))
-            data.blockAboveLenientTicks = 20;
+            data.blockAboveLenientTicks = DEFAULT_LENIENCE;
         else data.blockAboveLenientTicks--;
 
 
@@ -157,15 +190,13 @@ public class onPlayerMove implements Listener {
             // 3.) Check if the fall distance from last vertical position is abnormal. This is more of a
             // check to detect fly cheats faster instead of falling
 
-            Effect jumpBoostEffect = player.getEffect(8); // Get jump boost effect
-            Effect levitationEffect = player.getEffect(24); // Get levitation effect
-            if (levitationEffect != null || isWearingElytra) data.offGroundTicks = 0; // Fix levitation false flags
+            if (data.levitationPotionLenientTicks > 0 || isWearingElytra) data.offGroundTicks = 0; // Fix levitation/elytra false flags
 
             float differenceValue = (data.lastY - y);
-            if (data.startFallPos == null && (y < data.lastY || data.offGroundTicks >= (jumpBoostEffect != null ? 8 + jumpBoostEffect.getAmplifier() : 6) || differenceValue > 0.0 && differenceValue < 0.07839966)) // Check if the start fall position is already defined, if not, we then use the mentioned methods
+            if (data.startFallPos == null && (y < data.lastY || data.offGroundTicks >= (data.jumpPotionLenientTicks > 0 ? 8 + data.lastJumpAmplifier : 6) || differenceValue > 0.0 && differenceValue < 0.07839966)) // Check if the start fall position is already defined, if not, we then use the mentioned methods
             {
                 data.startFallPos = new Vector3(x, y, z); // Set the start fall position value
-                if (jumpBoostEffect != null) data.offGroundTicks = 7; // Jump boost fix
+                if (data.jumpPotionLenientTicks > 0) data.offGroundTicks = 7; // Jump boost fix
             } else
                 data.fallingTicks++; // We have already started falling - increment falling ticks.
         }

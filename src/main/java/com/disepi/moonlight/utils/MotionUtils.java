@@ -2,6 +2,7 @@ package com.disepi.moonlight.utils;
 
 import cn.nukkit.Player;
 import cn.nukkit.potion.Effect;
+import com.disepi.moonlight.anticheat.player.PlayerData;
 
 public class MotionUtils {
     public static final double PI = 3.1415927;
@@ -13,6 +14,9 @@ public class MotionUtils {
 
     // The maximum speed you can reach while on ground
     public static final double GROUND_SPEED_DEFAULT = 0.38573077;
+
+    // Default jump height value.
+    public static final float JUMP_VALUE_DEFAULT = 0.42000008f;
 
     // Below are arrays of packet logged vanilla values.
     // This may not be the best solution but it saves performance from not needing to do the math and also because it is accurate and easier to create checks with
@@ -29,10 +33,9 @@ public class MotionUtils {
     }
 
     // Gets the speed multiplier based off potion effect
-    public static float getSpeedMultiplier(Player player) {
-        Effect speedPot = player.getEffect(1); // Get speed potion
-        if (speedPot == null) return 1.0f; // If no speed potion is active then return default speed
-        return 1.0f + ((speedPot.getAmplifier() + 1) * 0.2f); // Return multiplier
+    public static float getSpeedMultiplier(PlayerData player) {
+        if (player.speedPotionLenientTicks < 0) return 1.0f; // If no speed potion is active then return default speed
+        return 1.0f + ((player.lastSpeedAmplifier + 1) * 0.2f); // Return multiplier
     }
 
     // Returns the expected move velocity based off the amount of ticks off ground

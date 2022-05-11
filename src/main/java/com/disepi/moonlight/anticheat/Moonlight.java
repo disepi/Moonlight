@@ -11,7 +11,7 @@ import com.disepi.moonlight.anticheat.check.exploit.timer.Timer;
 import com.disepi.moonlight.anticheat.check.motion.fly.FlyA;
 import com.disepi.moonlight.anticheat.check.motion.speed.SpeedA;
 import com.disepi.moonlight.anticheat.check.motion.speed.SpeedB;
-import com.disepi.moonlight.anticheat.check.motion.speed.SpeedC;
+import com.disepi.moonlight.anticheat.check.motion.speed.SpeedD;
 import com.disepi.moonlight.anticheat.player.PlayerData;
 import com.disepi.moonlight.utils.FakePlayer;
 import com.disepi.moonlight.utils.Util;
@@ -38,7 +38,8 @@ public class Moonlight {
         // Multi-level checks
         checks.add(new SpeedA());
         checks.add(new SpeedB());
-        checks.add(new SpeedC());
+        //checks.add(new SpeedC());
+        checks.add(new SpeedD());
         checks.add(new FlyA());
         checks.add(new KillauraA());
         checks.add(new KillauraB());
