@@ -29,7 +29,7 @@ public class SpeedD extends Check {
             return;
 
         // Jump height
-        if (value > 0 && value < MotionUtils.JUMP_VALUE_DEFAULT && value != 0.24810028f) // TODO: remove fixed value, fixed value only occurs when jumping inside a hole
+        if (value > 0 && value < 0.33319998f && value != 0.24810028f) // TODO: remove fixed value, fixed value only occurs when jumping inside a hole
             doFailCheck(p, d, value);
     }
 
