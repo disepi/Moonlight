@@ -12,10 +12,10 @@ public class PlayerData {
     public FakePlayer fake; // The fake player entity used for some checks
     public float lastX, lastY, lastZ, lastPitch, lastYaw, predictedFallAmount, currentSpeed, lastSpeed, balance = 0; // Last player position info and other movement stuff
     public int onGroundTicks, offGroundTicks, fallingTicks = 0; // Ticks
-    public boolean onGround, onGroundAlternate, onGroundAlternateLast = true; // onGround stores if the player is near ground, onGroundAlternate stores if the player is directly on ground
+    public boolean onGround, onGroundAlternate, onGroundAlternateLast, isCollidedHorizontally = true; // onGround stores if the player is near ground, onGroundAlternate stores if the player is directly on ground
     public Vector3 startFallPos, lastGroundPos = null; // Position of when the player started falling
     public long lastTime = 0; // Last time when the player sent a move packet in milliseconds
-    public long lastSwingTime = 0; // Last time when the player swung
+    public long lastSwingTime, lastSwingTimeBefore = 0; // Last time when the player swung
 
     public int frictionLenientTicks = 0; // Ice blocks
     public int gravityLenientTicks = 0; // Ladders, lava, water, cobwebs, slimeblocks etc.
@@ -57,6 +57,7 @@ public class PlayerData {
         long currentTime = System.currentTimeMillis();
         this.lastTime = currentTime;
         this.lastSwingTime = currentTime;
+        this.lastSwingTimeBefore = currentTime;
     }
 
     // Removes the instance of the fake player from the world and the class instance

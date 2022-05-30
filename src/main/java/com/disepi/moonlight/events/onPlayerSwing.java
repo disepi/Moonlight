@@ -16,6 +16,7 @@ public class onPlayerSwing implements Listener {
         if (event.getAnimationType() != AnimatePacket.Action.SWING_ARM) return; // We only want swings
         PlayerData data = Moonlight.getData(event.getPlayer());
         if (data == null) return;
+        data.lastSwingTimeBefore = data.lastSwingTime;
         data.lastSwingTime = System.currentTimeMillis(); // Set swing time
     }
 }

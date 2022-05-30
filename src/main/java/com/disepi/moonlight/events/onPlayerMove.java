@@ -46,7 +46,7 @@ public class onPlayerMove implements Listener {
         // Teleport/respawn check
         if (data.isTeleporting) {
             data.lastX = (float) data.teleportPos.x;
-            data.lastY = (float) data.teleportPos.y+1.62f;
+            data.lastY = (float) data.teleportPos.y + 1.62f;
             data.lastZ = (float) data.teleportPos.z;
             if (Util.distance(x, y, z, (float) data.teleportPos.x, (float) data.teleportPos.y, (float) data.teleportPos.z) > 1.7) {
                 event.setCancelled(true);
@@ -58,33 +58,29 @@ public class onPlayerMove implements Listener {
 
         // Elytra
         Item chestplateItem = player.getInventory().getArmorItem(1);
-        if(chestplateItem instanceof ItemElytra) data.elytraWornLenience = DEFAULT_LENIENCE;
+        if (chestplateItem instanceof ItemElytra) data.elytraWornLenience = DEFAULT_LENIENCE;
         else data.elytraWornLenience--;
         boolean isWearingElytra = data.elytraWornLenience > 0;
 
         // Jump boost
         Effect jumpBoostEffect = player.getEffect(8); // Get jump boost effect
-        if(jumpBoostEffect != null)
-        {
+        if (jumpBoostEffect != null) {
             data.lastJumpAmplifier = jumpBoostEffect.getAmplifier();
             data.jumpPotionLenientTicks = DEFAULT_LENIENCE;
-        }
-        else
+        } else
             data.jumpPotionLenientTicks--;
 
         // Speed
         Effect speedEffect = player.getEffect(1); // Get jump boost effect
-        if(speedEffect != null)
-        {
+        if (speedEffect != null) {
             data.lastSpeedAmplifier = speedEffect.getAmplifier();
             data.speedPotionLenientTicks = DEFAULT_LENIENCE;
-        }
-        else
+        } else
             data.speedPotionLenientTicks--;
 
         // Levitation
         Effect levitationEffect = player.getEffect(24); // Get levitation effect
-        if(levitationEffect != null)
+        if (levitationEffect != null)
             data.levitationPotionLenientTicks = DEFAULT_LENIENCE;
         else
             data.levitationPotionLenientTicks--;
@@ -106,11 +102,16 @@ public class onPlayerMove implements Listener {
         data.viewVector = new Vector3(Math.cos(cYaw), Math.sin(cPitch), Math.sin(cYaw));
 
         // Check whether we are actually standing on a block
-        Block block = WorldUtils.getNearestSolidBlock(x, y, z, player.level, 2); // Retrieve nearest solid block
-        Block blockAboveNearestBlock = player.level.getBlock((int) block.x, (int) block.y + 1, (int) block.z);
+        Block block = WorldUtils.getNearestSolidBlock(x, y, z, player.level, 1.0f); // Retrieve nearest solid block
+        Block blockAboveNearestBlock = WorldUtils.getBlock(player.level, (int) block.x, (int) block.y + 1, (int) block.z);
         data.onGround = !(block instanceof BlockAir); // Set on ground if block is not air (solid)
         data.onGroundAlternateLast = data.onGroundAlternate;
-        data.onGroundAlternate = !(player.level.getBlock((int) x, (int) (y - 1.62), (int) z) instanceof BlockAir); // Check if we are DIRECTLY under a block
+        data.onGroundAlternate = !(WorldUtils.getBlock(player.level, (int) x, (int) (y - 1.62), (int) z) instanceof BlockAir); // Check if we are DIRECTLY under a block
+
+        // Collision
+        float expand = 0.4f;
+        // if(WorldUtils.isConsideredSolid(player.level, x + expand, y-1.62f, z)||WorldUtils.isConsideredSolid(player.level, x - expand, y-1.62f, z)||WorldUtils.isConsideredSolid(player.level, x, y-1.62f, z + expand)||WorldUtils.isConsideredSolid(player.level, x, y-1.62f, z - expand)||WorldUtils.isConsideredSolid(player.level, x + expand, y-1.62f, z + expand)||WorldUtils.isConsideredSolid(player.level, x - expand, y-1.62f, z + expand)||WorldUtils.isConsideredSolid(player.level, x + expand, y-1.62f, z - expand))
+        //    Util.log("Collided");
 
         // Stair check - we also have to check for the above block because sometimes it
         if (block instanceof BlockStairs || blockAboveNearestBlock instanceof BlockStairs)
@@ -124,11 +125,11 @@ public class onPlayerMove implements Listener {
 
         // Friction changing blocks
         if (block instanceof BlockIce || block instanceof BlockIcePacked || block instanceof BlockWater || block instanceof BlockWaterStill || block instanceof BlockLava || block instanceof BlockLavaStill || block instanceof BlockSlime || block instanceof BlockHayBale || block instanceof BlockBed)
-            data.frictionLenientTicks = (int)(DEFAULT_LENIENCE*1.5f);
+            data.frictionLenientTicks = (int) (DEFAULT_LENIENCE * 1.5f);
         else data.frictionLenientTicks--;
 
         // Check for a block above us
-        if (!(WorldUtils.getNearestSolidBlock(x, y + 2.53, z, player.level, 1) instanceof BlockAir))
+        if (!(WorldUtils.getNearestSolidBlock(x, y + 2.53, z, player.level, 1.5f) instanceof BlockAir))
             data.blockAboveLenientTicks = DEFAULT_LENIENCE;
         else data.blockAboveLenientTicks--;
 
@@ -184,19 +185,20 @@ public class onPlayerMove implements Listener {
             // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             // 1.) Check if the current vertical position is less than the last movement's vertical position
             // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-            // 2.) Check if offGround ticks has reached 6 - this number comes from the amount of offGround
+            // 2.) Check if offGround ticks has reached 7 - this number comes from the amount of offGround
             // ticks it takes to start falling after a vanilla jump.
             // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             // 3.) Check if the fall distance from last vertical position is abnormal. This is more of a
             // check to detect fly cheats faster instead of falling
 
-            if (data.levitationPotionLenientTicks > 0 || isWearingElytra) data.offGroundTicks = 0; // Fix levitation/elytra false flags
+            if (data.levitationPotionLenientTicks > 0 || isWearingElytra)
+                data.offGroundTicks = 0; // Fix levitation/elytra false flags
 
             float differenceValue = (data.lastY - y);
             if (data.startFallPos == null && (y < data.lastY || data.offGroundTicks >= (data.jumpPotionLenientTicks > 0 ? 8 + data.lastJumpAmplifier : 6) || differenceValue > 0.0 && differenceValue < 0.07839966)) // Check if the start fall position is already defined, if not, we then use the mentioned methods
             {
                 data.startFallPos = new Vector3(x, y, z); // Set the start fall position value
-                if (data.jumpPotionLenientTicks > 0) data.offGroundTicks = 7; // Jump boost fix
+                if (data.jumpPotionLenientTicks > 0) data.offGroundTicks = 6; // Jump boost fix
             } else
                 data.fallingTicks++; // We have already started falling - increment falling ticks.
         }

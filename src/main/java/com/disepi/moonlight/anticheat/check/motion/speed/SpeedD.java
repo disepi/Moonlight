@@ -4,16 +4,17 @@ import cn.nukkit.Player;
 import cn.nukkit.network.protocol.MovePlayerPacket;
 import com.disepi.moonlight.anticheat.check.Check;
 import com.disepi.moonlight.anticheat.player.PlayerData;
-import com.disepi.moonlight.utils.MotionUtils;
 
 public class SpeedD extends Check {
+    float[] expected = {0.33319998f, 0.24810028f, 0.16479969f, 0.08310032f, 0.0029997826f};
+
     // Constructor
     public SpeedD() {
         super("SpeedD", "Invalid vertical jump movement", 8);
     }
 
     public void doFailCheck(Player p, PlayerData d, float value) {
-        fail(p, "height=" + value);
+        fail(p, "height=" + value + ", offGroundTicks=" + d.offGroundTicks);
         lagback(p, d);
         violate(p, d, 1, true);
     }
@@ -21,20 +22,20 @@ public class SpeedD extends Check {
     public void check(MovePlayerPacket e, PlayerData d, Player p) {
         reward(d, 0.25f); // Violate
 
-        // Fix falses
-        if(d.gravityLenientTicks > 0 || d.blockAboveLenientTicks > 0 || d.lerpTicks > 0)
-            return;
-
         // Catches teleports
         float value = e.y - d.lastY;
         if (value >= 1.0f) doFailCheck(p, d, value);
 
-        if (d.onGroundAlternate || !d.onGroundAlternateLast || d.offGroundTicks != 0)
+        if (d.gravityLenientTicks > 0)
             return;
 
-        // Jump height
-        if (value > 0 && value < 0.33319998f && value != 0.24810028f) // TODO: remove fixed value, fixed value only occurs when jumping inside a hole
-            doFailCheck(p, d, value);
+        //if(!d.onGround)
+        //    Util.log("test");
+
+        if (!d.onGround && value > 0.0f && d.offGroundTicks != 0) {
+            //  if(expected[d.offGroundTicks] != value)
+            // doFailCheck(p,d,value);
+        }
     }
 
 }

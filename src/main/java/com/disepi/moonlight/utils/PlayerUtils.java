@@ -25,8 +25,7 @@ public class PlayerUtils {
         return new FakePlayer(new Position(targetPlayer.x, targetPlayer.y + 3.5, targetPlayer.z, targetPlayer.getLevel()), skinArray);
     }
 
-    public static AddEntityPacket getCustomAddEntityPacket(int type)
-    {
+    public static AddEntityPacket getCustomAddEntityPacket(int type) {
         AddEntityPacket addEntityPkt = new AddEntityPacket();
         addEntityPkt.type = type;
         long entID = Entity.entityCount++;

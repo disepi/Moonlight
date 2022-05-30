@@ -1,7 +1,5 @@
 package com.disepi.moonlight.utils;
 
-import cn.nukkit.Player;
-import cn.nukkit.potion.Effect;
 import com.disepi.moonlight.anticheat.player.PlayerData;
 
 public class MotionUtils {

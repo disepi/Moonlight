@@ -19,6 +19,8 @@ public class SpeedB extends Check {
     public void check(MovePlayerPacket e, PlayerData d, Player p) {
         reward(d, 0.05f); // Violation reward
 
+        if (e.y < -100) return;
+
         if (d.onGroundAlternate && d.onGroundTicks > 15 && d.currentSpeed > MotionUtils.GROUND_SPEED_DEFAULT * d.speedMultiplier) // If we are on the ground and speed is too high
         {
             fail(p, "speed=" + d.currentSpeed + ", onGroundTicks=" + d.onGroundTicks + ", type=GROUNDED, vl=" + (int) getViolationScale(d)); // Failed check
