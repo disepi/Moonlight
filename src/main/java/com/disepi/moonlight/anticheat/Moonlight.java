@@ -38,10 +38,10 @@ public class Moonlight {
 
         // Multi-level checks
         checks.add(new SpeedA());
-        checks.add(new SpeedB());
-        checks.add(new SpeedC());
-        checks.add(new SpeedD());
-        checks.add(new FlyA());
+        //checks.add(new SpeedB());
+        //checks.add(new SpeedC());
+        //checks.add(new SpeedD());
+        //checks.add(new FlyA());
         checks.add(new KillauraA());
         checks.add(new KillauraB());
 
