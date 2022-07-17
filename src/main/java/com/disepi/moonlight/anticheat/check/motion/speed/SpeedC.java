@@ -5,6 +5,7 @@ import cn.nukkit.network.protocol.MovePlayerPacket;
 import com.disepi.moonlight.anticheat.check.Check;
 import com.disepi.moonlight.anticheat.player.PlayerData;
 import com.disepi.moonlight.utils.MotionUtils;
+import com.disepi.moonlight.utils.Util;
 
 public class SpeedC extends Check {
     // Constructor
@@ -14,8 +15,7 @@ public class SpeedC extends Check {
 
     public void check(MovePlayerPacket e, PlayerData d, Player p) {
         reward(d, 0.1f); // Violate
-
-        if (!d.onGround && d.offGroundTicks > 1 && d.currentSpeed > 0.275) {
+        /*if (!d.onGround && d.offGroundTicks > 1 && d.currentSpeed > 0.275) {
             double expected = (MotionUtils.getExpectedSpeedValue(d.offGroundTicks) * d.speedMultiplier) * 1.75;
 
             double predictedVelX = d.viewVector.x * expected;
@@ -28,7 +28,7 @@ public class SpeedC extends Check {
                 lagback(p, d);
                 violate(p, d, 1, true); // Violate
             }
-        }
+        }*/
     }
 
 }

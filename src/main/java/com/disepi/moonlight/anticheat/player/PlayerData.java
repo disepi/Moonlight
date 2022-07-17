@@ -12,7 +12,7 @@ public class PlayerData {
     public FakePlayer fake; // The fake player entity used for some checks
     public float lastX, lastY, lastZ, lastPitch, lastYaw, predictedFallAmount, currentSpeed, lastSpeed, balance = 0; // Last player position info and other movement stuff
     public int onGroundTicks, offGroundTicks, fallingTicks = 0; // Ticks
-    public boolean onGround, onGroundAlternate, onGroundAlternateLast, isCollidedHorizontally = true; // onGround stores if the player is near ground, onGroundAlternate stores if the player is directly on ground
+    public boolean onGround = true; // onGround stores if the player is near ground, onGroundAlternate stores if the player is directly on ground
     public Vector3 startFallPos, lastGroundPos = null; // Position of when the player started falling
     public long lastTime = 0; // Last time when the player sent a move packet in milliseconds
     public long lastSwingTime, lastSwingTimeBefore = 0; // Last time when the player swung
@@ -24,6 +24,7 @@ public class PlayerData {
     public int sprintingTicks = 0; // Will stay at 10 when player is sprinting and decrease over ticks if they are not
     public int jumpTicks = 0; // Increases to a fixed value when a player jumps and decreases after
     public int lerpTicks = 0; // Increases to a fixed value when a player's motion gets set by the server
+    public int collidedHorizontallyTicks = 0; // Increases to a fixed value when a player collides horizontally
     public float speedMultiplier = 1; // Speed potions affect this
 
     public int speedPotionLenientTicks = 0;
@@ -43,6 +44,8 @@ public class PlayerData {
     public Vector3 viewVector;
     public boolean resetMove = false;
 
+    public int moveTicks = 0;
+
     // Constructor
     public PlayerData(Player player) {
         this.lastX = (float) player.x;
@@ -51,13 +54,13 @@ public class PlayerData {
         this.teleportPos = new Vector3(player.x, player.y, player.z);
         this.lastGroundPos = this.teleportPos;
         this.isTeleporting = false;
-        this.onGroundAlternateLast = false;
         int deviceOSType = player.getLoginChainData().getDeviceOS();
         if (deviceOSType == 1 || deviceOSType == 2) isTouchscreen = true;
         long currentTime = System.currentTimeMillis();
         this.lastTime = currentTime;
         this.lastSwingTime = currentTime;
         this.lastSwingTimeBefore = currentTime;
+        this.startFallPos = null;
     }
 
     // Removes the instance of the fake player from the world and the class instance
@@ -74,6 +77,14 @@ public class PlayerData {
     public boolean isPlayerConsideredJumping() {
         return this.jumpTicks > 0;
     }
+
+    public float getExtraJumpValue() { return (this.lastJumpAmplifier+1)/10.0f; }
+
+    public boolean hasPlayerLoadedIn() { return this.moveTicks > 2;}
+
+    public boolean isJumpBoostActive() { return this.jumpPotionLenientTicks > 0; }
+    public boolean isLevitationActive() { return this.levitationPotionLenientTicks > 0; }
+    public boolean isSpeedActive() { return this.speedPotionLenientTicks > 0; }
 
     public void violate(Check check, float amount) {
         this.violationMap[check.checkId] += amount;

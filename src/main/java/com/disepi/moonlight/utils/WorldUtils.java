@@ -1,9 +1,6 @@
 package com.disepi.moonlight.utils;
 
-import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockAir;
-import cn.nukkit.block.BlockFence;
-import cn.nukkit.block.BlockWall;
+import cn.nukkit.block.*;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.Vector3;
 
@@ -29,7 +26,7 @@ public class WorldUtils {
 
     // Checks surroundings to retrieve the nearest solid block
     public static Block getNearestSolidBlock(Vector3 pos, Level level, float radius) {
-        double value = 1.64; // getEyeHeight();
+        double value = 1.62 + 0.0001; // getEyeHeight();
         Block under = getBlock(level, (int) pos.x, (int) (pos.y - value), (int) pos.z); // Get the block
         if (!(under instanceof BlockAir)) // Check if it isn't air
             return under; // Return the retrieved block
@@ -45,8 +42,8 @@ public class WorldUtils {
         // Fences/walls
         for (float x = -radius; x < radius; x += 0.5f) {
             for (float z = -radius; z < radius; z += 0.5f) {
-                Block temp = getBlock(level, (int) (pos.x + x), (int) (pos.y - value - 0.5f), (int) (pos.z + z)); // get temp block
-                if (temp instanceof BlockWall || temp instanceof BlockFence)
+                Block temp = getBlock(level, (int) (pos.x + x), (int) (pos.y - value - 0.75f), (int) (pos.z + z)); // get temp block
+                if (temp instanceof BlockWall || temp instanceof BlockFence || temp instanceof BlockFenceGate)
                     return temp; // check if it is a wall/fence block
             }
         }

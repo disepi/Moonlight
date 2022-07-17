@@ -16,7 +16,7 @@ import com.disepi.moonlight.utils.Util;
 public class Main extends PluginBase {
     @Override
     public void onEnable() {
-        super.onEnable();
+        super.onEnable();//
 
         // Configurations
         saveDefaultConfig();

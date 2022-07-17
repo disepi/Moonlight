@@ -32,6 +32,10 @@ public class Util {
         return (float) Math.sqrt(dX * dX + dY * dY + dZ * dZ);
     }
 
+    public static float floatMod(float x, float y){
+        return (x - (float)Math.floor(x/y) * y);
+    }
+
     public static Vector2 getRotationsToPosition(Vector3 origin, Vector3 target) {
         double xDiff = target.x - origin.x;
         double yDiff = target.y - origin.y - 1.2;

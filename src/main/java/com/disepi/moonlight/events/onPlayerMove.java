@@ -8,14 +8,23 @@ import cn.nukkit.event.server.DataPacketReceiveEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemElytra;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.network.protocol.LoginPacket;
 import cn.nukkit.network.protocol.MovePlayerPacket;
 import cn.nukkit.potion.Effect;
+import cn.nukkit.utils.ClientChainData;
 import com.disepi.moonlight.anticheat.Moonlight;
 import com.disepi.moonlight.anticheat.check.Check;
 import com.disepi.moonlight.anticheat.player.PlayerData;
 import com.disepi.moonlight.utils.MotionUtils;
 import com.disepi.moonlight.utils.Util;
 import com.disepi.moonlight.utils.WorldUtils;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class onPlayerMove implements Listener {
 
@@ -42,6 +51,7 @@ public class onPlayerMove implements Listener {
         Player player = event.getPlayer(); // Get the player instance from the packet
         PlayerData data = Moonlight.getData(player); // Get the player data instance from Moonlight
         if (data == null) return;
+        data.moveTicks++;
 
         // Teleport/respawn check
         if (data.isTeleporting) {
@@ -104,14 +114,18 @@ public class onPlayerMove implements Listener {
         // Check whether we are actually standing on a block
         Block block = WorldUtils.getNearestSolidBlock(x, y, z, player.level, 1.0f); // Retrieve nearest solid block
         Block blockAboveNearestBlock = WorldUtils.getBlock(player.level, (int) block.x, (int) block.y + 1, (int) block.z);
-        data.onGround = !(block instanceof BlockAir); // Set on ground if block is not air (solid)
-        data.onGroundAlternateLast = data.onGroundAlternate;
-        data.onGroundAlternate = !(WorldUtils.getBlock(player.level, (int) x, (int) (y - 1.62), (int) z) instanceof BlockAir); // Check if we are DIRECTLY under a block
+        data.onGround = !(block instanceof BlockAir) && block.isSolid(); // Set on ground if block is not air (solid)
+
+        if(!Util.isRoughlyEqual(packet.y % 0.015625f,0.010627747f, 0.00001f) || !packet.onGround)
+            data.onGround = false;
+
+        packet.onGround = data.onGround; // Our information is more accurate - we do NOT trust the client with the onGround value located inside the packet.
 
         // Collision
-        float expand = 0.4f;
-        // if(WorldUtils.isConsideredSolid(player.level, x + expand, y-1.62f, z)||WorldUtils.isConsideredSolid(player.level, x - expand, y-1.62f, z)||WorldUtils.isConsideredSolid(player.level, x, y-1.62f, z + expand)||WorldUtils.isConsideredSolid(player.level, x, y-1.62f, z - expand)||WorldUtils.isConsideredSolid(player.level, x + expand, y-1.62f, z + expand)||WorldUtils.isConsideredSolid(player.level, x - expand, y-1.62f, z + expand)||WorldUtils.isConsideredSolid(player.level, x + expand, y-1.62f, z - expand))
-        //    Util.log("Collided");
+        float expand = 1.25f;
+        if(WorldUtils.isConsideredSolid(player.level, x + expand, y-1.62f, z)||WorldUtils.isConsideredSolid(player.level, x - expand, y-1.62f, z)||WorldUtils.isConsideredSolid(player.level, x, y-1.62f, z + expand)||WorldUtils.isConsideredSolid(player.level, x, y-1.62f, z - expand)||WorldUtils.isConsideredSolid(player.level, x + expand, y-1.62f, z + expand)||WorldUtils.isConsideredSolid(player.level, x - expand, y-1.62f, z + expand)||WorldUtils.isConsideredSolid(player.level, x + expand, y-1.62f, z - expand))
+            data.collidedHorizontallyTicks = DEFAULT_LENIENCE/3;
+        else data.collidedHorizontallyTicks--;
 
         // Stair check - we also have to check for the above block because sometimes it
         if (block instanceof BlockStairs || blockAboveNearestBlock instanceof BlockStairs)
@@ -138,7 +152,8 @@ public class onPlayerMove implements Listener {
         if (data.lerpTicks > 0) // Damage ticks
         {
             data.currentSpeed /= 1.0 + (data.lastLerpStrength * 1.5f);
-            data.startFallPos = new Vector3(x, y, z);
+            data.startFallPos = null;
+            data.offGroundTicks = 0;
             data.fallingTicks = 0;
         }
 
@@ -147,7 +162,6 @@ public class onPlayerMove implements Listener {
         if (data.staircaseLenientTicks > 0) data.currentSpeed /= 2.4;
         if (isWearingElytra) data.currentSpeed /= 4.0;
 
-        packet.onGround = data.onGroundAlternate; // Our information is more accurate - we do NOT trust the client with the onGround value located inside the packet.
         data.resetMove = false;
 
         // Cycles through and runs Moonlight's checks.
@@ -163,7 +177,7 @@ public class onPlayerMove implements Listener {
             return;
         }
 
-        if (data.onGroundAlternate) // set onground state
+        if (data.onGround) // set onground state
             data.lastGroundPos = new Vector3(x, y - (1.62 - 0.000001), z);
 
         // Calculate off/on ground ticks
@@ -185,20 +199,20 @@ public class onPlayerMove implements Listener {
             // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             // 1.) Check if the current vertical position is less than the last movement's vertical position
             // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-            // 2.) Check if offGround ticks has reached 7 - this number comes from the amount of offGround
+            // 2.) Check if offGround ticks has reached 8 - this number comes from the amount of offGround
             // ticks it takes to start falling after a vanilla jump.
             // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
             // 3.) Check if the fall distance from last vertical position is abnormal. This is more of a
             // check to detect fly cheats faster instead of falling
 
-            if (data.levitationPotionLenientTicks > 0 || isWearingElytra)
+            if (data.isLevitationActive() || isWearingElytra)
                 data.offGroundTicks = 0; // Fix levitation/elytra false flags
 
-            float differenceValue = (data.lastY - y);
-            if (data.startFallPos == null && (y < data.lastY || data.offGroundTicks >= (data.jumpPotionLenientTicks > 0 ? 8 + data.lastJumpAmplifier : 6) || differenceValue > 0.0 && differenceValue < 0.07839966)) // Check if the start fall position is already defined, if not, we then use the mentioned methods
+            float differenceValue = Math.abs(data.lastY - y);
+            if (data.startFallPos == null && (y < data.lastY || data.offGroundTicks >= (data.jumpPotionLenientTicks > 0 ? 9 + data.lastJumpAmplifier : 7))) // Check if the start fall position is already defined, if not, we then use the mentioned methods
             {
                 data.startFallPos = new Vector3(x, y, z); // Set the start fall position value
-                if (data.jumpPotionLenientTicks > 0) data.offGroundTicks = 6; // Jump boost fix
+                if (data.jumpPotionLenientTicks > 0) data.offGroundTicks = 7; // Jump boost fix
             } else
                 data.fallingTicks++; // We have already started falling - increment falling ticks.
         }

@@ -5,6 +5,12 @@ import cn.nukkit.network.protocol.MovePlayerPacket;
 import com.disepi.moonlight.anticheat.check.Check;
 import com.disepi.moonlight.anticheat.player.PlayerData;
 import com.disepi.moonlight.utils.MotionUtils;
+import com.disepi.moonlight.utils.Util;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 
 public class FlyA extends Check {
     // Constructor
@@ -17,10 +23,10 @@ public class FlyA extends Check {
     // Check failure type "GLIDE" occurs when the player's downward velocity is too small to occur in vanilla gameplay.
 
     // GLIDE type check helper function
-    public void checkSmallMovement(Player p, PlayerData d, float difference, float value) {
+    public void checkSmallMovement(Player p, PlayerData d, float difference, float value, String type) {
         if (difference < value) // Check is difference is smaller than value
         {
-            fail(p, "difference=" + difference + ", type=glide, vl=" + (int) getViolationScale(d)); // We have failed the check
+            fail(p, "difference=" + difference + ", type=glide-" + type + ", vl=" + (int) getViolationScale(d)); // We have failed the check
             lagback(p, d); // Lagback the player
             violate(p, d, 1.5f, true); // Violate check
         }
@@ -33,15 +39,12 @@ public class FlyA extends Check {
 
         // GLIDE type check
         float diffVal = Math.abs(e.y - d.lastY);
-        if (!d.onGround)
-            checkSmallMovement(p, d, diffVal, 0.0010004044f);
-        else return;
 
-        if (d.startFallPos == null || d.offGroundTicks < 11)
+        if (d.startFallPos == null || !d.hasPlayerLoadedIn() || d.offGroundTicks < 7)
             return; // Do not check if the player has not started falling.
 
         double gravity = d.startFallPos.y - e.y; // Player has started falling, get actual fall distance
-        double predictedGravity = MotionUtils.getExpectedFallValue(d.offGroundTicks - 7); // Get predicted fall distance by the server
+        double predictedGravity = MotionUtils.getExpectedFallValue(d.offGroundTicks - 8); // Get predicted fall distance by the server
 
         // Gravity prediction
         if (predictedGravity - 0.0005 > gravity) // Check if expected velocity was higher than what we received from the client
@@ -60,7 +63,7 @@ public class FlyA extends Check {
         }
 
         // GLIDE type check
-        checkSmallMovement(p, d, diffVal, 0.37389946f);
+        //checkSmallMovement(p, d, diffVal, 0.024398804f, "post");
     }
 
 }

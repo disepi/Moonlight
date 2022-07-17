@@ -4,17 +4,17 @@ import cn.nukkit.Player;
 import cn.nukkit.network.protocol.MovePlayerPacket;
 import com.disepi.moonlight.anticheat.check.Check;
 import com.disepi.moonlight.anticheat.player.PlayerData;
+import com.disepi.moonlight.utils.MotionUtils;
+import com.disepi.moonlight.utils.Util;
 
 public class SpeedD extends Check {
-    float[] expected = {0.33319998f, 0.24810028f, 0.16479969f, 0.08310032f, 0.0029997826f};
-
     // Constructor
     public SpeedD() {
         super("SpeedD", "Invalid vertical jump movement", 8);
     }
 
-    public void doFailCheck(Player p, PlayerData d, float value) {
-        fail(p, "height=" + value + ", offGroundTicks=" + d.offGroundTicks);
+    public void doFailCheck(Player p, PlayerData d, float value, float expected) {
+        fail(p, "height=" + value + ", expected=" + expected + ", offGroundTicks=" + d.offGroundTicks);
         lagback(p, d);
         violate(p, d, 1, true);
     }
@@ -22,20 +22,21 @@ public class SpeedD extends Check {
     public void check(MovePlayerPacket e, PlayerData d, Player p) {
         reward(d, 0.25f); // Violate
 
+        boolean hasJumpBoost = d.isJumpBoostActive();
+
         // Catches teleports
         float value = e.y - d.lastY;
-        if (value >= 1.0f) doFailCheck(p, d, value);
+        float expectedTeleportValue = hasJumpBoost ? 1.0f + d.getExtraJumpValue() : 1.0f;
+        if (value >= expectedTeleportValue) doFailCheck(p, d, value, expectedTeleportValue);
 
-        if (d.gravityLenientTicks > 0)
-            return;
-
-        //if(!d.onGround)
-        //    Util.log("test");
-
-        if (!d.onGround && value > 0.0f && d.offGroundTicks != 0) {
-            //  if(expected[d.offGroundTicks] != value)
-            // doFailCheck(p,d,value);
+        if(!d.onGround && value > 0.0f && d.offGroundTicks < 6)
+        {
+            for(float expected : MotionUtils.GRAVITY_JUMP_VALUES) {
+                if(expected == value) return;
+            }
+            doFailCheck(p, d, value, 0);
         }
+
     }
 
 }

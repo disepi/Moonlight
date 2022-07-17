@@ -11,6 +11,7 @@ import com.disepi.moonlight.anticheat.check.exploit.timer.Timer;
 import com.disepi.moonlight.anticheat.check.motion.fly.FlyA;
 import com.disepi.moonlight.anticheat.check.motion.speed.SpeedA;
 import com.disepi.moonlight.anticheat.check.motion.speed.SpeedB;
+import com.disepi.moonlight.anticheat.check.motion.speed.SpeedC;
 import com.disepi.moonlight.anticheat.check.motion.speed.SpeedD;
 import com.disepi.moonlight.anticheat.player.PlayerData;
 import com.disepi.moonlight.utils.FakePlayer;
@@ -38,7 +39,7 @@ public class Moonlight {
         // Multi-level checks
         checks.add(new SpeedA());
         checks.add(new SpeedB());
-        //checks.add(new SpeedC());
+        checks.add(new SpeedC());
         checks.add(new SpeedD());
         checks.add(new FlyA());
         checks.add(new KillauraA());
@@ -69,8 +70,11 @@ public class Moonlight {
     // Sends a message to all operators currently online - and the console
     public static void sendMessageToModerators(Player temp, String message) {
         // TODO: Add permissions and such for this, uses operator list for now
-        for (String op : temp.getServer().getOps().getKeys()) // Get all operator names
-            temp.getServer().getPlayer(op).sendMessage(message); // Send them the message
+        for (Player p : temp.getServer().getOnlinePlayers().values()) // Get all operator names
+        {
+            if(p.isOp())
+                p.sendMessage(message);
+        }
         Util.log(message); // Print to console too for easy debugging and access
     }
 
