@@ -4,8 +4,6 @@ import cn.nukkit.Player;
 import cn.nukkit.network.protocol.MovePlayerPacket;
 import com.disepi.moonlight.anticheat.check.Check;
 import com.disepi.moonlight.anticheat.player.PlayerData;
-import com.disepi.moonlight.utils.MotionUtils;
-import com.disepi.moonlight.utils.Util;
 
 public class SpeedC extends Check {
     // Constructor

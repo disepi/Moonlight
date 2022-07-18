@@ -3,15 +3,13 @@ package com.disepi.moonlight.anticheat.check;
 import cn.nukkit.Player;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.network.protocol.DisconnectPacket;
+import cn.nukkit.network.protocol.InventoryTransactionPacket;
+import cn.nukkit.network.protocol.MobEquipmentPacket;
 import cn.nukkit.network.protocol.MovePlayerPacket;
 import cn.nukkit.network.protocol.PlayerActionPacket;
 import cn.nukkit.utils.TextFormat;
 import com.disepi.moonlight.anticheat.Moonlight;
 import com.disepi.moonlight.anticheat.player.PlayerData;
-
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class Check {
     public String name, detection; // The basic information about the check
@@ -64,21 +62,7 @@ public class Check {
 
     // Punishes the player.
     public void punish(Player p, PlayerData d) {
-        String message = Moonlight.stylizedChatString + p.getName() + TextFormat.GRAY + " was " + TextFormat.DARK_RED + "punished" + TextFormat.DARK_GRAY + ". [" + this.name + "]";
-        Moonlight.sendMessageToModerators(p, message);
-
-        // Disconnect packet
-        DisconnectPacket disconnectPacket = new DisconnectPacket();
-        disconnectPacket.hideDisconnectionScreen = false;
-        disconnectPacket.message = Moonlight.kickString;
-        p.dataPacket(disconnectPacket);
-
-        // Packet kick after 1000ms
-        (new Timer()).schedule(new TimerTask() {
-            public void run() {
-                p.kick();
-            }
-        }, 1000L);
+        d.punish(p, this.name);
     }
 
     // Below are override functions - they do nothing but they get overridden in standalone checks
@@ -90,6 +74,12 @@ public class Check {
     }
 
     public void check(PlayerActionPacket e, PlayerData d, Player p) {
+    }
+
+    public void check(InventoryTransactionPacket e, PlayerData d, Player p) {
+    }
+
+    public void check(MobEquipmentPacket e, PlayerData d, Player p) {
     }
 
 }

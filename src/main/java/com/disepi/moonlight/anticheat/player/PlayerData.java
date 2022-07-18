@@ -2,8 +2,14 @@ package com.disepi.moonlight.anticheat.player;
 
 import cn.nukkit.Player;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.network.protocol.DisconnectPacket;
+import cn.nukkit.utils.TextFormat;
+import com.disepi.moonlight.anticheat.Moonlight;
 import com.disepi.moonlight.anticheat.check.Check;
 import com.disepi.moonlight.utils.FakePlayer;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class PlayerData {
 
@@ -16,6 +22,7 @@ public class PlayerData {
     public Vector3 startFallPos, lastGroundPos = null; // Position of when the player started falling
     public long lastTime = 0; // Last time when the player sent a move packet in milliseconds
     public long lastSwingTime, lastSwingTimeBefore = 0; // Last time when the player swung
+    public long lastSwitchTime = 0; // Last time when the player switched slots (MobEquipmentPacket)
 
     public int frictionLenientTicks = 0; // Ice blocks
     public int gravityLenientTicks = 0; // Ladders, lava, water, cobwebs, slimeblocks etc.
@@ -26,6 +33,8 @@ public class PlayerData {
     public int lerpTicks = 0; // Increases to a fixed value when a player's motion gets set by the server
     public int collidedHorizontallyTicks = 0; // Increases to a fixed value when a player collides horizontally
     public float speedMultiplier = 1; // Speed potions affect this
+
+    public int ping, pingInTicks = 0;
 
     public int speedPotionLenientTicks = 0;
     public int levitationPotionLenientTicks = 0;
@@ -78,13 +87,29 @@ public class PlayerData {
         return this.jumpTicks > 0;
     }
 
-    public float getExtraJumpValue() { return (this.lastJumpAmplifier+1)/10.0f; }
+    public float getExtraJumpValue() {
+        return (this.lastJumpAmplifier + 1) / 10.0f;
+    }
 
-    public boolean hasPlayerLoadedIn() { return this.moveTicks > 2;}
+    public boolean hasPlayerLoadedIn() {
+        return this.moveTicks > 2;
+    }
 
-    public boolean isJumpBoostActive() { return this.jumpPotionLenientTicks > 0; }
-    public boolean isLevitationActive() { return this.levitationPotionLenientTicks > 0; }
-    public boolean isSpeedActive() { return this.speedPotionLenientTicks > 0; }
+    public boolean isJumpBoostActive() {
+        return this.jumpPotionLenientTicks > 0;
+    }
+
+    public boolean isLevitationActive() {
+        return this.levitationPotionLenientTicks > 0;
+    }
+
+    public boolean isSpeedActive() {
+        return this.speedPotionLenientTicks > 0;
+    }
+
+    public boolean isPlayerSwinging(int ticks) {
+        return (System.currentTimeMillis() - this.lastSwingTime) < ticks*50;
+    }
 
     public void violate(Check check, float amount) {
         this.violationMap[check.checkId] += amount;
@@ -98,6 +123,24 @@ public class PlayerData {
 
     public float getViolationScale(Check check) {
         return this.violationMap[check.checkId];
+    }
+
+    public void punish(Player p, String name) {
+        String message = Moonlight.stylizedChatString + p.getName() + TextFormat.GRAY + " was " + TextFormat.DARK_RED + "punished" + TextFormat.DARK_GRAY + (name != "" ? ". [" + name + "]" : "");
+        Moonlight.sendMessageToModerators(p, message);
+
+        // Disconnect packet
+        DisconnectPacket disconnectPacket = new DisconnectPacket();
+        disconnectPacket.hideDisconnectionScreen = false;
+        disconnectPacket.message = Moonlight.kickString;
+        p.dataPacket(disconnectPacket);
+
+        // Packet kick after 1000ms
+        (new Timer()).schedule(new TimerTask() {
+            public void run() {
+                p.kick();
+            }
+        }, 1000L);
     }
 
 }

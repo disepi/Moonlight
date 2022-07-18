@@ -5,12 +5,6 @@ import cn.nukkit.network.protocol.MovePlayerPacket;
 import com.disepi.moonlight.anticheat.check.Check;
 import com.disepi.moonlight.anticheat.player.PlayerData;
 import com.disepi.moonlight.utils.MotionUtils;
-import com.disepi.moonlight.utils.Util;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 
 public class FlyA extends Check {
     // Constructor

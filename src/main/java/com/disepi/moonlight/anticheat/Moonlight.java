@@ -8,11 +8,9 @@ import com.disepi.moonlight.anticheat.check.combat.killaura.KillauraB;
 import com.disepi.moonlight.anticheat.check.exploit.badpackets.BadPackets;
 import com.disepi.moonlight.anticheat.check.exploit.noswing.NoSwing;
 import com.disepi.moonlight.anticheat.check.exploit.timer.Timer;
-import com.disepi.moonlight.anticheat.check.motion.fly.FlyA;
 import com.disepi.moonlight.anticheat.check.motion.speed.SpeedA;
-import com.disepi.moonlight.anticheat.check.motion.speed.SpeedB;
-import com.disepi.moonlight.anticheat.check.motion.speed.SpeedC;
-import com.disepi.moonlight.anticheat.check.motion.speed.SpeedD;
+import com.disepi.moonlight.anticheat.check.player.scaffold.ScaffoldA;
+import com.disepi.moonlight.anticheat.check.player.scaffold.ScaffoldB;
 import com.disepi.moonlight.anticheat.player.PlayerData;
 import com.disepi.moonlight.utils.FakePlayer;
 import com.disepi.moonlight.utils.Util;
@@ -27,7 +25,7 @@ public class Moonlight {
     public static CopyOnWriteArrayList<FakePlayer> fakePlayers = new CopyOnWriteArrayList<FakePlayer>(); // Stores all of the instances of fake players
     public static int checkAmount = 0; // Check amount
     public static String stylizedChatString = TextFormat.DARK_GRAY + "[" + TextFormat.DARK_AQUA + "moonlight" + TextFormat.DARK_GRAY + "] " + TextFormat.WHITE;
-    public static String kickString = TextFormat.DARK_GRAY + "Client modifications detected.";
+    public static String kickString = "Invalid byte buffer received from client";
 
     // Configuration values
     public static boolean cancelNukkitInvalidMove = true;
@@ -36,7 +34,6 @@ public class Moonlight {
     public static void initializeChecks() {
         checks.clear();
 
-        // Multi-level checks
         checks.add(new SpeedA());
         //checks.add(new SpeedB());
         //checks.add(new SpeedC());
@@ -44,8 +41,8 @@ public class Moonlight {
         //checks.add(new FlyA());
         checks.add(new KillauraA());
         checks.add(new KillauraB());
-
-        // Singular checks
+        checks.add(new ScaffoldA());
+        checks.add(new ScaffoldB());
         checks.add(new BadPackets());
         checks.add(new NoSwing());
         checks.add(new Timer());
@@ -72,7 +69,7 @@ public class Moonlight {
         // TODO: Add permissions and such for this, uses operator list for now
         for (Player p : temp.getServer().getOnlinePlayers().values()) // Get all operator names
         {
-            if(p.isOp())
+            if (p.isOp())
                 p.sendMessage(message);
         }
         Util.log(message); // Print to console too for easy debugging and access

@@ -27,7 +27,7 @@ public class Main extends PluginBase {
 
         // Game event listeners
         PluginManager mgr = getServer().getPluginManager();
-        mgr.registerEvents(new onPlayerMove(), this);
+        mgr.registerEvents(new onPlayerSendPacket(), this);
         mgr.registerEvents(new onPlayerJoin(), this);
         mgr.registerEvents(new onPlayerAttackEntity(), this);
         mgr.registerEvents(new onPlayerDamage(), this);
@@ -36,7 +36,6 @@ public class Main extends PluginBase {
         mgr.registerEvents(new onPlayerPerformAction(), this);
         mgr.registerEvents(new onPlayerSetMotion(), this);
         mgr.registerEvents(new onPlayerSetPos(), this);
-        mgr.registerEvents(new onPlayerSwing(), this);
 
         // Setup invisible skin for FakePlayer
         PlayerUtils.setupSkinStream();

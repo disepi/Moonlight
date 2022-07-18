@@ -2,6 +2,7 @@ package com.disepi.moonlight.utils;
 
 import cn.nukkit.math.Vector2;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.network.protocol.NetworkStackLatencyPacket;
 import cn.nukkit.utils.Logger;
 
 import java.security.SecureRandom;
@@ -32,8 +33,23 @@ public class Util {
         return (float) Math.sqrt(dX * dX + dY * dY + dZ * dZ);
     }
 
-    public static float floatMod(float x, float y){
-        return (x - (float)Math.floor(x/y) * y);
+    public static double distance(double x, double y, double z, double x2, double y2, double z2)
+    {
+        double dX = x - x2;
+        double dY = y - y2;
+        double dZ = z - z2;
+        return Math.sqrt(dX * dX + dY * dY + dZ * dZ);
+    }
+
+    public static NetworkStackLatencyPacket getStackLatency(long ms) {
+        NetworkStackLatencyPacket stack = new NetworkStackLatencyPacket();
+        stack.timestamp = ms;
+        stack.unknownBool = true; // "needResponse" or "sendBack"
+        return stack;
+    }
+
+    public static float floatMod(float x, float y) {
+        return (x - (float) Math.floor(x / y) * y);
     }
 
     public static Vector2 getRotationsToPosition(Vector3 origin, Vector3 target) {

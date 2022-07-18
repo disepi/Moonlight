@@ -12,7 +12,6 @@ public class KillauraA extends Check {
         super("KillauraA", "Not aiming at target", 16);
     }
 
-
     public void check(EntityDamageByEntityEvent e, PlayerData d, Player p) {
         reward(d, 0.5f);
         if (d.isTouchscreen) return;
