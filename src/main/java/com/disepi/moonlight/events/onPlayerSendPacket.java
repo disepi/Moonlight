@@ -50,7 +50,7 @@ public class onPlayerSendPacket implements Listener {
         // AnimatePacket receive
         if ((event.getPacket() instanceof AnimatePacket)) {
             AnimatePacket packet = (AnimatePacket) event.getPacket();
-            if(packet.action != AnimatePacket.Action.SWING_ARM) return;
+            if (packet.action != AnimatePacket.Action.SWING_ARM) return;
             data.lastSwingTimeBefore = data.lastSwingTime;
             data.lastSwingTime = System.currentTimeMillis(); // Set swing time
             return;

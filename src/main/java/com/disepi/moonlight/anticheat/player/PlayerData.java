@@ -108,7 +108,7 @@ public class PlayerData {
     }
 
     public boolean isPlayerSwinging(int ticks) {
-        return (System.currentTimeMillis() - this.lastSwingTime) < ticks*50;
+        return (System.currentTimeMillis() - this.lastSwingTime) < ticks * 50;
     }
 
     public void violate(Check check, float amount) {

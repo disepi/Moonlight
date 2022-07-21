@@ -33,8 +33,7 @@ public class Util {
         return (float) Math.sqrt(dX * dX + dY * dY + dZ * dZ);
     }
 
-    public static double distance(double x, double y, double z, double x2, double y2, double z2)
-    {
+    public static double distance(double x, double y, double z, double x2, double y2, double z2) {
         double dX = x - x2;
         double dY = y - y2;
         double dZ = z - z2;
