@@ -1,5 +1,9 @@
 <h3 align="center">🌙</h3>
 <h1 align="center">moonlight</h1>
+
+#### The public Moonlight repository has been archived. There is still ongoing development within the private repository. If you have any inquiries about this, please contact me on Discord: disepi#7182
+#### This public source is built for 1.19.20 Nukkit non-auth-input servers
+
 Moonlight is an anticheat for Nukkit designed to prevent cheating. It is still in early stages of development and, at the moment, alot of checks are not implemented or do not work properly.
 
 #### Currently, Moonlight is only for experimental purposes. You can still use it, but expect to see bugs as it is not fully finished yet!
